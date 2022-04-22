@@ -1,0 +1,61 @@
+.sidenav_s {
+  all: initial;
+  all:  unset;
+  height: 100%;
+  width: 160px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #FFFFFF;
+  overflow-x: hidden;
+  padding-top: 20px;
+  color: black;
+}
+
+.sidenav_s h1{
+  all: unset;
+  font-size: 16px;
+  color: black;
+
+}
+
+.sidenav_s a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+}
+
+.sidenav_s a:hover {
+  color: #f1f1f1;
+}
+
+.main_s {
+  margin-left: 160px; /* Same as the width of the sidenav */
+  padding: 0px 10px;
+}
+
+.loader_s {
+  border: 16px solid #f3f3f3;
+  display: flex;
+  justify-content: center;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 50px;
+  height: 50px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

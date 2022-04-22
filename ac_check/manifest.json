@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "AC-CHECK",
+  "version": "0.1",
+
+  "description": "Una extension de accesibilidad",
+
+  //https://stackoverflow.com/questions/70719505/how-to-activate-deactivate-chrome-extension-with-keyboard-shortcut-development
+
+  "author": "Mikel Iturria",
+
+ "background":{
+    "service_worker": "/JS/background.js"
+  },
+  "permissions": ["scripting","storage","activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "manifest_version": 3,
+
+  "action": {
+    "default_title": "Click to turn on/off"
+  },
+
+  "icons": { 
+    "16": "/images/icon16.png",
+    "19": "/images/icon19.png",
+    "32": "/images/icon32.png",
+    "48": "/images/icon48.png",
+    "128": "/images/icon128.png" },
+
+  "content_scripts": [
+  {
+    "matches": ["<all_urls>"],
+    "js":["/JS/jquery.min.js"],
+    "css": ["/CSS/main_sidebar.css"]
+  }]
+}
