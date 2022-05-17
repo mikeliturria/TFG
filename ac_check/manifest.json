@@ -12,7 +12,7 @@
  "background":{
     "service_worker": "/JS/background.js"
   },
-  "permissions": ["scripting","storage","activeTab"],
+  "permissions": ["scripting","storage","activeTab","unlimitedStorage"],
   "host_permissions": ["<all_urls>"],
   "manifest_version": 3,
 
@@ -30,7 +30,7 @@
   "content_scripts": [
   {
     "matches": ["<all_urls>"],
-    "js":["/JS/jquery.min.js"],
-    "css": ["/CSS/main_sidebar.css"]
+    "js":["/JS/jquery.min.js","/JS/tablas.js"],
+    "css": ["/CSS/main_sidebar.css","/CSS/tablas.css"]
   }]
 }

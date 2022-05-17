@@ -1,0 +1,21 @@
+.tabla_RES th{
+	text-align: center;
+	width:50px;
+}
+
+.tabla_contenido a{
+	all: none;
+	font-size: 11px;
+
+}
+
+.boton_tabla {
+  border: none;
+  background-color: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  display: inline-block;
+  color: dodgerblue;
+}
+
+.boton_tabla:hover {background: #eee;}
