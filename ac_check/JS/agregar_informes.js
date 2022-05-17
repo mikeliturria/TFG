@@ -42,9 +42,22 @@ function main(){
     //Se esta guardando mal el JSON, mejor pasarlo a texto y guardar el texto?
 
     //console.log("COntenido: "+texto);
+    var loc = window.location.hostname;
 
-    var para= document.getElementById("para").innerHTML = texto;
+    var main = localStorage.getItem("tabla_secun");
+    var texto2 = "";
 
+    if (main == null){
+        texto2 = "<text style='font-size:26px'></text>";
+    }else{
+        //texto = "<pre><code>"+JSON.stringify(json, null, 4)+"</pre></code>";
+        texto2 = main;
+    }
+    if(loc !== 'www.w3.org'){
+        document.getElementById("tabla_res").innerHTML = texto;
+        document.getElementById('tabla_contenido').innerHTML=texto2;
+
+    }
 
 
 }
@@ -243,55 +256,4 @@ function merge_audit_samples(primario,secundario){
         }
         */
     }
-}
-
-function update(){
-    var jsonT = localStorage.getItem("json");
-    var json = JSON.parse(jsonT);
-    var a_s = json.auditSample;
-    let longitud = json.auditSample.length;
-    console.log("Long: "+longitud);
-    //La longitud es 50 en AA
-
-    var c_passed = 0;
-    var c_failed = 0;
-    var c_cannot_tell = 0;
-    var c_not_present = 0;
-    var c_not_checked = 0;
-
-    for (var i = 0; i <longitud; i++){
-        var res = json.auditSample[i].result.outcome.id;
-        switch(res) {
-            case "earl:failed":
-                c_failed = c_failed+1;
-                break;
-            case "earl:untested":
-                c_not_checked = c_not_checked+1;
-                break;
-            case "earl:cantTell":
-                c_cannot_tell = c_cannot_tell+1;
-                break;
-            case "earl:passed":
-                c_passed = c_passed+1;
-                break;
-            case "earl:inapplicable":
-                c_not_present = c_not_present+1;
-                break;
-            default:
-        }
-    }
-
-    var html = "<table><tr><th>Type</th><th>Cantity</th></tr>";
-    html += "<tr><td>Passed</td><td>"+c_passed+"</td></tr>";
-    html += "<tr><td>Failed</td><td>"+c_failed+"</td></tr>";
-    html += "<tr><td>Cannot Tell</td><td>"+c_cannot_tell+"</td></tr>";
-    html += "<tr><td>Not present</td><td>"+c_not_present+"</td></tr>";
-    html += "<tr><td>Not checked</td><td>"+c_not_checked+"</td></tr>";
-
-
-    html += "</table>";
-
-    localStorage.setItem("tabla_resultados",html);
-    document.getElementById('para').innerHTML=html;
-
 }

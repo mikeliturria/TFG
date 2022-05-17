@@ -2,7 +2,7 @@
   all: initial;
   all:  unset;
   height: 100%;
-  width: 160px;
+  width: 200px;
   position: fixed;
   z-index: 1;
   top: 0;
@@ -33,11 +33,12 @@
 }
 
 .main_s {
-  margin-left: 160px; /* Same as the width of the sidenav */
+  margin-left: 200px; /* Same as the width of the sidenav */
   padding: 0px 10px;
 }
 
 .loader_s {
+  margin-left: 75px;
   border: 16px solid #f3f3f3;
   display: flex;
   justify-content: center;
