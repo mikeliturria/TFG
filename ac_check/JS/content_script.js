@@ -24,9 +24,11 @@ if(typeof init === 'undefined'){
 			for (let item of bd) {
 				document.getElementById('main_s').appendChild(item)
 			}
-			let codigo_nav = '<h1>Limpiar datos</h1><input type="button" id="limpiar" name="limpiar" value="limpiar" /><br><br><h1>Obtener datos auto</h1><input type="button" id="auto" name="auto" value="Obtener" /><br><br><h1>Subir fichero (agregar)</h1><input class="file-upload-button" type="file" /><br><br><h1>Descargar contenido actual</h1><input type="button" id="download" name="download" value="Descragar" /><br><br><h1>Contenido JSON:</h1><p id="tabla_res"></p><br><br><p id="tabla_contenido"></p><script type="text/javascript" src="/JS/agregar_informes.js"></script><script type="text/javascript" src="http://127.0.0.1:5000/tablas.js"></script><script src="/JS/funciones_jquery.js"></script>';
-			codigo_nav += "<script>function probando_js(){"+
-				"console.log('Entro');}</script>";
+			let codigo_nav = '<input type="button" id="limpiar" name="limpiar" value="Limpiar datos&#x00A;almacenados" class="boton_secundario_sn"/><br><br><br>';
+			codigo_nav+= '<input type="button" id="auto" name="auto" value="Obtener datos&#x00A;automáticamente" class="boton_principal_sn"/><br><br><br><br>';
+			codigo_nav+= '<label class="boton_secundario_sn2"><input id="file-upload-button" type="file" style="display: none;" accept=".json"/>Agregar un informe</label><br><br><br>';
+			codigo_nav+= '<input type="button" id="download" name="download" class="boton_principal_sn2" value="Descargar informe" /><br><br><br>';
+			codigo_nav+= '<br><br><p class="titulo_sb">Contenido del informe:</p><p id="tabla_res"></p><br><br><p id="tabla_contenido"></p><script type="text/javascript" src="/JS/agregar_informes.js"></script><script type="text/javascript" src="http://127.0.0.1:5000/tablas.js"></script><script src="/JS/funciones_jquery.js"></script>';
 			document.getElementById('sidenav_s').innerHTML=codigo_nav;
 
 		}else{
@@ -37,8 +39,3 @@ if(typeof init === 'undefined'){
 
 	init();
 }
-
-function probando(){
-	console.log('AI');
-}
-

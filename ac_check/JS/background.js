@@ -1,3 +1,5 @@
+function main_bk(){
+
 try{
 
   //var toggle = true;
@@ -58,3 +60,6 @@ try{
 }catch(e){
   console.log(e);
 }
+}
+
+main_bk();

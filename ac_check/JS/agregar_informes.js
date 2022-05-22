@@ -33,7 +33,7 @@ function main(){
     var texto = "";
 
     if (json == null){
-        texto = "<text style='font-size:26px'>ESTA VACIO</text>";
+        texto = "<div style='text-align:center'><text style='font-size:14px'>Sin datos</text></div>";
     }else{
         //texto = "<pre><code>"+JSON.stringify(json, null, 4)+"</pre></code>";
         texto = jsonTabla;
@@ -44,7 +44,7 @@ function main(){
     //console.log("COntenido: "+texto);
     var loc = window.location.hostname;
 
-    var main = localStorage.getItem("tabla_secun");
+    var main = localStorage.getItem("tabla_main");
     var texto2 = "";
 
     if (main == null){
