@@ -118,7 +118,6 @@ def JSON_access_monitor(url):
     options.add_argument('--headless')
     #Importante ponerle el lenguaje predefinido el inglés, sino sale en portugués
     options.add_argument("--lang=en");
-    # executable_path param is not needed if you updated PATH
     browser = webdriver.Chrome(options=options, executable_path='./chromedriver.exe')
 
     informe = {

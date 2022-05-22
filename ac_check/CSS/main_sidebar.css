@@ -1,4 +1,5 @@
 .sidenav_s {
+  font-family: 'Helvetica';
   all: initial;
   all:  unset;
   height: 100%;
@@ -13,10 +14,13 @@
   color: black;
 }
 
-.sidenav_s h1{
+.titulo_sb{
   all: unset;
+  font-family: 'Helvetica';
   font-size: 16px;
   color: black;
+  text-align: center;
+  text-decoration:underline;
 
 }
 
@@ -60,3 +64,81 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.boton_principal_sn {
+  margin-top: 50px;
+  margin-bottom: 50px;
+  position: absolute;
+  margin-left: 30px;
+  border-radius: 5px;
+  border: 2px solid #005a6a;
+  background-color: #005a6a;
+  color: white;
+  justify-content: center;
+  padding: 8px 12px 8px 12px;
+  align-items: center;
+  display: inline-flex;
+  text-align: center;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.boton_secundario_sn {
+  position: absolute;
+  margin-left: 40px;
+  margin-bottom: 50px;
+  margin-top: 25px;
+  border-radius: 5px;
+  border: 2px solid #005a6a;
+  background-color: white;
+  color: #005a6a;
+  justify-content: center;
+  padding: 8px 12px 8px 12px;
+  align-items: center;
+  display: inline-flex;
+  text-align: center;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.boton_secundario_sn2 {
+  position: absolute;
+  margin-left: 25px;
+  margin-bottom: 50px;
+  margin-top: 50px;
+  border-radius: 5px;
+  border: 2px solid #005a6a;
+  background-color: white;
+  color: #005a6a;
+  justify-content: center;
+  padding: 8px 12px 8px 12px;
+  align-items: center;
+  display: inline-flex;
+  text-align: center;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+
+}
+
+.boton_principal_sn2 {
+  margin-top: 50px;
+  margin-bottom: 50px;
+  position: absolute;
+  margin-left: 28px;
+  border-radius: 5px;
+  border: 2px solid #005a6a;
+  background-color: #005a6a;
+  color: white;
+  justify-content: center;
+  padding: 8px 12px 8px 12px;
+  align-items: center;
+  display: inline-flex;
+  text-align: center;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+
+
+

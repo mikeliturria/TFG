@@ -19,3 +19,53 @@
 }
 
 .boton_tabla:hover {background: #eee;}
+
+.collapsible_tabla {
+  background-color: white;
+  color:black;
+  cursor: pointer;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 12px;
+}
+
+.active, .collapsible_tabla:hover, .collapsible_tabla2:hover {
+  color: white;
+  background-color: #00B4D5;
+}
+
+.content_tabla {
+  display: none;
+  overflow: hidden;
+  font-size: 10px;
+
+}
+
+.collapsible_tabla2 {
+  background-color: #C7D1D3;
+  color:black;
+  cursor: pointer;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+}
+
+.collapsible_tabla3 {
+  color:black;
+  cursor: pointer;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 10px;
+}
+
+.collapsible_tabla,.collapsible_tabla2 td{
+  white-space:nowrap;
+  }

@@ -10,7 +10,7 @@ $(document).ready(function(){
   });
   */
 
-  $(document).on('change', '.file-upload-button', function(event) {
+  $(document).on('change', '#file-upload-button', function(event) {
     var reader = new FileReader();
     //alert("Entra");
     
@@ -41,13 +41,32 @@ $(document).ready(function(){
       localStorage.removeItem('json_resultados');
       localStorage.removeItem("tabla_resultados");
       localStorage.removeItem("tabla_main");
-      localStorage.removeItem("tabla_secun");
       
       alert("Datos limpiados de memoria");
       var origin = window.location.origin; 
       if(origin !=="https://www.w3.org"){
         window.location.reload();
       }
+  });
+
+  $(".collapsible_tabla").click(function(){
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+
+  $(".collapsible_tabla2").click(function(){
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
   });
 
   $("#main_table").click(function(){
