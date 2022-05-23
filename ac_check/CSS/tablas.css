@@ -69,3 +69,14 @@
 .collapsible_tabla,.collapsible_tabla2 td{
   white-space:nowrap;
   }
+
+.tabla_resultados {
+  width:100%;
+  font-size:12px
+}
+.tabla_resultados th{
+  height: 40px; 
+}
+.tabla_resultados td{
+  padding-left:10px
+}

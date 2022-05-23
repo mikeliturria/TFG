@@ -69,6 +69,16 @@ $(document).ready(function(){
     }
   });
 
+  $(".collapsible_tabla3").click(function(){
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+
   $("#main_table").click(function(){
       var mt = localStorage.getItem('tabla_main');
       localStorage.setItem("tabla_secun",mt); 

@@ -46,7 +46,8 @@ function update(){
         }
 
         json_resultados[codigo_estandar] = {
-            'result' : res 
+            'result' : res,
+            "Codigos": obj.result.codigo_error 
         };
 
 
@@ -479,9 +480,11 @@ function print_sub_subsubsections(estandar){
     let style = "";
     var codigo_nav_st = "";
     let result_text ="";
+    let len = 0;
     var json_resultados = localStorage.getItem('json_resultados');
     json_resultados = JSON.parse(json_resultados);
     for(var keyST in sub_temas){
+        len = 0;
         if(keyST in json_resultados){
             res = json_resultados[keyST].result; 
             switch(res) {
@@ -507,6 +510,15 @@ function print_sub_subsubsections(estandar){
                     break;
                 default:
             }
+            let obj = json_resultados[keyST];
+            if("Codigos" in obj){
+                let codigos = json_resultados[keyST]['Codigos'];
+                //console.log("Key: "+keyST+" cod "+codigos);
+                len = codigos.length;
+            }else{
+                len = 0;
+            }
+            
         }else{
             console.log('No en el documento: '+keyST);
             style = "background-color:#8CFAFA";
@@ -514,19 +526,83 @@ function print_sub_subsubsections(estandar){
         }
         
 
+
         st = sub_temas[keyST];
-        codigo_nav_st +='<button type="button" class="collapsible_tabla3" style="'+style+'"><table style="width:100%; table-layout: fixed; overflow-wrap: break-word;""><tr><td style="width:70%;   text-align: left;">';
-        codigo_nav_st += st;
-        codigo_nav_st += '</td><td style="font-size:9px"><b>'+result_text+'</b></td>';
+        codigo_nav_st +='<button type="button" class="collapsible_tabla3" style="'+style+'"><table style="width:100%; table-layout: fixed; overflow-wrap: break-word;""><tr>';
+        
+        if(len>0){
+            codigo_nav_st += '<td style="width:15%;"><img src="http://127.0.0.1:5000/flecha.png" alt="Desplegar informacion" height="20px"></td>';
+            codigo_nav_st += '<td style="width:55%;   text-align: left;">'+st+'</td>';
+        }else{
+            codigo_nav_st += '<td style="width:70%;   text-align: left;">'+st+'</td>';
+        }
+        codigo_nav_st += '<td style="font-size:9px"><b>'+result_text+'</b></td>';
         codigo_nav_st += '</tr></table></button><div class="content_tabla">';
         /*
         sst = sub_temasF(keyST);
         if (Object.keys(sst).length >0){
             codigo_nav_st += print_subsections(keyST);
+        }*/
+        
+        if(len>0){
+            codigo_nav_st += print_report_result(keyST);
         }
-        */
+        
         codigo_nav_st+='</div>';
     }
     return codigo_nav_st;
+
+}
+
+function print_report_result(keyST){
+    var json_resultados = localStorage.getItem('json_resultados');
+    json_resultados = JSON.parse(json_resultados);
+    let obj = json_resultados[keyST]['Codigos'];
+    var arrayLength = obj.length;
+
+    let html = "";
+    html += '<table class="tabla_resultados">';
+    for (var i = 0; i < arrayLength; i++) {
+        codigo = obj[i]['codigo'];
+        tipo = obj[i]['tipo'];
+        texto = obj[i]['texto'];
+        linea = obj[i]['linea'];
+        web = obj[i]['web'];
+
+        html += '<tr><td><u>Analizer</u>:  <b>'+web+'</b></td></tr>';
+        html += '<tr><td><u>Result</u>:  <b>'+tipo+'</b></td></tr>';
+        html += '<tr><td><u>Message:</u></td></tr>';
+        html += '<tr><td>'+texto+'</td></tr>';
+        if("solucion" in obj[i]){
+            html += '<tr><td><u>Posible solution</u>:</td></tr>';
+            html += '<tr><td>'+obj[i]['solucion']+'</td></tr>';
+        }
+        html += '<tr><td><u>Code</u>:</td></tr>';
+        let c_len = codigo.length;
+        if(c_len>0){
+            html += '<tr><td>';
+            for (var j = 0; j < c_len; j++) {
+                codigot = codigo[j].replace('<','&lt;');
+                codigot = codigot.replace('>','&gt;');
+
+                html += '<code>'+codigot+'</code><br>';
+            }
+            /*
+            codigo = codigo[i].replace('<','&lt;');
+            codigo = codigo.replace('>','&gt;');
+
+            html += '<pre><code>'+codigo+'</code></pre><br>';*/
+            html += '</td></tr>';
+        }
+    }
+    html += '</table>'; 
+
+    return html;
+
+    //https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus
+
+
+
+
 
 }
