@@ -24,6 +24,11 @@ def tablas():
     #return send_file('../ac_check/JS/tablas.js',mimetype='text/js')
     return send_from_directory('../ac_check/JS/','tablas.js', mimetype='text/javascript')
 
+@app.route('/flecha.png')
+def flecha():
+    #return send_file('../ac_check/JS/tablas.js',mimetype='text/js')
+    return send_from_directory('../ac_check/images/','arrow.png', mimetype='image/gif')
+
 def escribir_texto(texto, html_):
     txt_nuevo=""            
     pos = texto.find("<")
@@ -105,6 +110,7 @@ def create_JSON():
 
     informe_final = merge_reports(informe, informe_2)
     informe_final = fomat_informe(url,informe_final)
+    
     return informe_final
 
 
@@ -143,7 +149,10 @@ def JSON_access_monitor(url):
         rows = cabeza.find_all('tr')
 
         informe_casos = {}
+
+
         for row in rows:
+            objeto_codigos_fallantes = {}
             cols = row.find_all('td')
             divc = cols[1].find('div',{'class':'collapsible-content'})
             nivel = cols[2].text
@@ -159,18 +168,22 @@ def JSON_access_monitor(url):
                 if tipo_texto == 'monitor_icons_praticas_status_incorrect':
                     tipo = True
                     array_prueba.append("Failed")
+                    acf_res = "Failed"
                     texto_final += "The next ERROR was found: \n\n"
                 elif tipo_texto == 'monitor_icons_praticas_status_review':
                     tipo = True
+                    acf_res = "Warning"
                     array_prueba.append("Cannot Tell")
                     texto_final += "The next WARNING was found: \n\n"
                 elif tipo_texto == 'monitor_icons_praticas_status_correct':
                     array_prueba.append("Passed")
+                    acf_res = "Passed"
                     texto_final += "The next CORRECTION CHECK was found: \n\n"
                 
                 #Si es un error o un warning habrá que hacer scraping
                 link = ""
                 texto_link = ""
+                afc_code = []
                 if tipo:
                     link = cols[3].a.get('href')
                     link = 'https://accessmonitor.acessibilidade.gov.pt'+link
@@ -180,8 +193,10 @@ def JSON_access_monitor(url):
                         i=i.replace('\n','')
                         i=i.replace('\t','')
                         texto_link += i+"\n\n"
+                        afc_code.append(i)
 
                 texto_final += divc.p.text
+                afc_text = divc.p.text
 
                 if tipo:
                     texto_final += "On the code: \n\n"
@@ -193,6 +208,16 @@ def JSON_access_monitor(url):
 
                 #Una vez el array lleno, llenamos los estandares con los valores.
                 codes = nombres_por_codigos()
+
+                objeto_codigos_fallantes = {
+                    "web":"AccessMonitor",
+                    "tipo": acf_res,
+                    "texto":afc_text,
+                    "codigo": afc_code
+                }
+
+
+
                 for estandar in estandares:
                     estandar = estandar.replace(' ','')
                     if estandar in codes:
@@ -214,11 +239,13 @@ def JSON_access_monitor(url):
 
                             texto_r = texto_Previo +"---------------------------------------- \n\n "+texto_Actual
                             informe_casos[nombre_wag]['Texto'] = texto_r
+                            informe_casos[nombre_wag]['Codigos'].append(objeto_codigos_fallantes)
 
                         else:
                             informe_casos[nombre_wag] = {
                                 'Resultado': array_prueba[0],
-                                'Texto' : array_prueba[1]
+                                'Texto' : array_prueba[1],
+                                'Codigos': [objeto_codigos_fallantes] 
                             }
     except TimeoutException:
         print("I give up...")
@@ -377,11 +404,28 @@ def get_contenido_achecker(browser):
 
                 texto_r = texto_Previo +"---------------------------------------- \n\n "+texto_Actual
                 inf_casos[nombre_wag]['Texto'] = texto_r
+                inf_casos[nombre_wag]['Codigos'].append({
+                        "web":"AChecker",
+                        "tipo": 'error',
+                        "texto":problema,
+                        "solucion":solucion,
+                        "codigo": [er['codigo']],
+                        'linea':er['linea']
+                    })
+
 
             else:
                 inf_casos[nombre_wag] = {
                     'Resultado':'Failed',
-                    'Texto' : texto_Actual
+                    'Texto' : texto_Actual,
+                    'Codigos':[{
+                        "web":"AChecker",
+                        "tipo": 'Failed',
+                        "texto":problema,
+                        "solucion":solucion,
+                        "codigo": [er['codigo']],
+                        'linea':er['linea']
+                    }]
                 }
 
 
@@ -427,11 +471,25 @@ def get_contenido_achecker(browser):
 
                 texto_r = texto_Previo +"---------------------------------------- \n\n "+texto_Actual
                 inf_casos[nombre_wag]['Texto'] = texto_r
+                inf_casos[nombre_wag]['Codigos'].append({
+                        "web":"AChecker",
+                        "tipo": 'Warning',
+                        "texto":problema,
+                        "codigo": [er['codigo']],
+                        'linea':er['linea']
+                    })
 
             else:
                 inf_casos[nombre_wag] = {
                     'Resultado':'Cannot Tell',
-                    'Texto' : texto_Actual
+                    'Texto' : texto_Actual,
+                    'Codigos':[{
+                        "web":"AChecker",
+                        "tipo": 'Warning',
+                        "texto":problema,
+                        "codigo": [er['codigo']],
+                        'linea':er['linea']
+                    }]
                 }
 
     #Checkear (potential problems)
@@ -478,11 +536,25 @@ def get_contenido_achecker(browser):
 
                 texto_r = texto_Previo +"---------------------------------------- \n\n "+texto_Actual
                 inf_casos[nombre_wag]['Texto'] = texto_r
+                inf_casos[nombre_wag]['Codigos'].append({
+                        "web":"AChecker",
+                        "tipo": 'PotentialProblem',
+                        "texto":problema,
+                        "codigo": [er['codigo']],
+                        'linea':er['linea']
+                    })
 
             else:
                 inf_casos[nombre_wag] = {
                     'Resultado':'Cannot Tell',
-                    'Texto' : texto_Actual
+                    'Texto' : texto_Actual,
+                    'Codigos':[{
+                        "web":"AChecker",
+                        "tipo": 'PotentialProblem',
+                        "texto":problema,
+                        "codigo": [er['codigo']],
+                        'linea':er['linea']
+                    }]
                 }
 
             informe['Cases'] = inf_casos
@@ -506,7 +578,8 @@ def merge_reports(informe1, informe2):
     for key,value in informe1['Cases'].items():
         informe_final[key] = {
             'Resultado' : value['Resultado'],
-            'Texto' : '*************'+autor1+'************* \n\n'+value['Texto']+'\n\n ************************** \n\n'
+            'Texto' : '*************'+autor1+'************* \n\n'+value['Texto']+'\n\n ************************** \n\n',
+            'Codigos': value['Codigos']
         }
 
     #Ahora los del informe 2
@@ -518,6 +591,9 @@ def merge_reports(informe1, informe2):
             resultado_Actual = value['Resultado']
             texto_Actual = value['Texto']
 
+            #informe_final[key]['Codigos'].append(value['Codigos'])
+
+
             if resultado_Previo =='Failed'or resultado_Actual == 'Failed':
                 informe_final[key]['Resultado'] = 'Failed'
             elif resultado_Previo =='Cannot Tell'or resultado_Actual == 'Cannot Tell':
@@ -528,11 +604,14 @@ def merge_reports(informe1, informe2):
 
             texto_r = texto_Previo +'*************'+autor2+'************* \n\n'+value['Texto']+'\n\n ************************** \n\n'
             informe_final[key]['Texto'] = texto_r
-
+            for cod in value['Codigos']:
+                informe_final[key]['Codigos'].append(cod)
         else:
             informe_final[key] = {
                 'Resultado' : value['Resultado'],
-                'Texto' : '*************'+autor2+'************* \n\n'+value['Texto']+'\n\n ************************** \n\n'
+                'Texto' : '*************'+autor2+'************* \n\n'+value['Texto']+'\n\n ************************** \n\n',
+                'Codigos': value['Codigos']
+
             } 
     return informe_final
 
@@ -586,6 +665,7 @@ def fomat_informe(url,informe):
                     "title": "Passed"
                 }
             informe_limpio['auditSample'][i]['result']['description'] = obj['Texto']
+            informe_limpio['auditSample'][i]['result']['codigo_error'] = obj['Codigos']
     return informe_limpio
 
 
