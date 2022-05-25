@@ -333,6 +333,11 @@ def achecker(url):
     # executable_path param is not needed if you updated PATH
     browser = webdriver.Chrome(options=options, executable_path='./chromedriver.exe')
 
+    informe = {
+        'Tester_Name' : 'Achecker',
+        'Cases':{}
+    }
+
 
     try:
         browser.get(ac)
@@ -386,7 +391,7 @@ def get_contenido_achecker(browser):
         for tr in trs:
             td = tr.td 
             linea_error= td.em
-            codigo = td.pre.code
+            codigo = td.pre.code.text
             errores_y_lineas.append({
                 'linea':str(linea_error),
                 'codigo':str(codigo)
@@ -447,7 +452,7 @@ def get_contenido_achecker(browser):
         for tr in trs:
             td = tr.td 
             linea_error= td.em
-            codigo = td.pre.code
+            codigo = td.pre.code.text
             errores_y_lineas.append({
                 'linea':str(linea_error),
                 'codigo':str(codigo)
@@ -509,7 +514,7 @@ def get_contenido_achecker(browser):
         for tr in trs:
             td = tr.td 
             linea_error= td.em
-            codigo = td.pre.code
+            codigo = td.pre.code.text
             errores_y_lineas.append({
                 'linea':str(linea_error),
                 'codigo':str(codigo)
@@ -538,7 +543,7 @@ def get_contenido_achecker(browser):
                 inf_casos[nombre_wag]['Texto'] = texto_r
                 inf_casos[nombre_wag]['Codigos'].append({
                         "web":"AChecker",
-                        "tipo": 'PotentialProblem',
+                        "tipo": 'Potential Problem',
                         "texto":problema,
                         "codigo": [er['codigo']],
                         'linea':er['linea']
@@ -550,7 +555,7 @@ def get_contenido_achecker(browser):
                     'Texto' : texto_Actual,
                     'Codigos':[{
                         "web":"AChecker",
-                        "tipo": 'PotentialProblem',
+                        "tipo": 'Potential Problem',
                         "texto":problema,
                         "codigo": [er['codigo']],
                         'linea':er['linea']
