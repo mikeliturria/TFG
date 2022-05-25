@@ -1,5 +1,140 @@
 $(document).ready(function(){
 
+  localStorage.removeItem('ultimo');
+
+  function _x(STR_XPATH) {
+    var xresult = document.evaluate(STR_XPATH, document, null, XPathResult.ANY_TYPE, null);
+    var xnodes = [];
+    var xres;
+    while (xres = xresult.iterateNext()) {
+        xnodes.push(xres);
+    }
+
+    return xnodes;
+  }
+
+  function mark_result(text){
+      //var txt = '<img src="https://eoidonostiaheo.hezkuntza.net/image/layout_set_logo?img_id=5814476"/image/layout_set_logo?img_id=5814476">';
+      let src = "";
+      let pos = -1;
+      //Primerotenemos que saber si viene de achecker
+      let txt = text;
+      let posCom = -1;
+      let posPun = -1;
+      if(txt.includes('...')){
+        //Foto
+        if(txt.includes('src')){
+          pos = txt.search('src');
+          txt = txt.substring(pos+5);
+          posCom = txt.search('"');
+          posPun = txt.search('...');
+          if(posCom<posPun){
+            txt = txt.substring(0,posCom);  
+            src = '//*[@src="'+txt2+'"]';          
+          }else{
+            txt = txt.substring(0,posPun);
+            src = '//img[contains(@src, "'+txt+'")]';
+          }
+          $(_x(src))[0].setAttribute('style','border: 5px solid red;');
+          $(_x(src))[0].scrollIntoView();
+          src = $(_x(src))[0].getAttribute('src');
+          actualizar_ultimo('//img[contains(@src, "'+src+'")]');
+          console.log('forma3')
+
+        }else{  //
+          //Primero probamos id
+          let pintado = false;
+          if(txt.includes('id')){
+            pos = txt.search('id');
+            txt = txt.substring(pos+4);
+            posCom = txt.search('"');
+            posPun = txt.indexOf('...');
+            if(posCom!== -1 && posCom<posPun){
+              //Hemos encontrado id
+              pintado = true;
+              txt = txt.substring(0,posCom);
+              src = '//*[@src="'+txt2+'"]';
+              $(_x(src))[0].setAttribute('style','border: 5px solid red;');
+              $(_x(src))[0].scrollIntoView();
+              actualizar_ultimo(src);            
+            }else{
+              //No hemos encontrado id, pero probamos si a ver con un poco de suerte solo hay una etiqueta que contenga ese id
+              txt = txt.substring(0,posPun-1);
+              //Sacamos la etiqueta de la que se trata
+              let eti = text.substring(1);
+              let posEspa = eti.search(' ');
+              eti = eti.substring(0,posEspa);
+              let clase_src = '';
+              //Comprobamos si tiene una clase valida
+              if(text.includes('class')){
+                let posCla = text.search('class');
+                let clase = text.substring(posCla+7);
+                let posCom_ = clase.search('"');
+                if(posCom_ !== -1){
+                  clase = clase.substring(0,posCom_);
+                  clase_src = ' and @class="'+clase+'"';
+                }
+              }
+              let len = $(_x('//'+eti+'[contains(@id, "_com_liferay_port")'+clase_src+']')).length;
+              if (len === 1){
+                //Solo hay un id que empiece así, nos vale
+                pintado = true;
+                src = '//'+eti+'[contains(@id, "_com_liferay_port")'+clase_src+']';
+                console.log(src);
+                $(_x(src))[0].setAttribute('style','border: 5px solid red;');
+                $(_x(src))[0].scrollIntoView();
+                let id =  $(_x(src))[0].getAttribute('id');
+                actualizar_ultimo('//*[@id="'+id+'"]');            
+              }
+
+            }
+          }
+        }
+          
+      //AccessMonitor
+      }else {
+        if(txt.includes('src')){
+          pos = txt.search('src');
+          txt = txt.substring(pos+5);
+          pos = txt.search('"');
+          txt2= txt.substring(pos+1);
+          pos = txt2.search('"');
+          txt2= txt2.substring(0,pos);
+          src = '//*[@src="'+txt2+'"]';
+          console.log(String(src));
+
+          if($(_x(src)).length ){
+            $(_x(src))[0].setAttribute('style','border: 5px solid red;');
+            $(_x(src))[0].scrollIntoView();
+            console.log('HECHO1');
+            actualizar_ultimo(src);
+
+          }else{
+            pos = txt.search('"');
+            txt = txt.substring(0,pos);
+            src = '//*[@src="'+txt+'"]';
+            $(_x(src))[0].setAttribute('style','border: 5px solid red;');
+            $(_x(src))[0].scrollIntoView();
+            console.log("Hecho2");
+            actualizar_ultimo(src);
+         }
+
+          //OJO! PARA https://eoidonostiaheo.hezkuntza.net/documents/5702472/5772458/ikasgunea.jpg/68231b11-6b6f-85ff-381e-0bb7bf62c29e?t=1603723910526 NO funciona
+        }else{
+            console.log('No incluye src');
+        }
+    }
+  }
+
+  function actualizar_ultimo(src){
+    let ultimo = localStorage.getItem('ultimo');
+    if(ultimo!==null){
+      $(_x(ultimo))[0].setAttribute('style','border: 0px solid red;');
+    }
+      localStorage.setItem('ultimo',src);
+
+  }
+
 
   /*
   $.getScript( "http://127.0.0.1:5000/tablas.js", function( data, textStatus, jqxhr ) {
@@ -41,6 +176,7 @@ $(document).ready(function(){
       localStorage.removeItem('json_resultados');
       localStorage.removeItem("tabla_resultados");
       localStorage.removeItem("tabla_main");
+      localStorage.removeItem("ultimo");
       
       alert("Datos limpiados de memoria");
       var origin = window.location.origin; 
@@ -48,6 +184,11 @@ $(document).ready(function(){
         window.location.reload();
       }
   });
+
+  $(".codigo_analisis").click(function(){
+    mark_result($(this).text());
+  });
+
 
   $(".collapsible_tabla").click(function(){
     this.classList.toggle("active");

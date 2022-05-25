@@ -569,6 +569,11 @@ function print_report_result(keyST){
         linea = obj[i]['linea'];
         web = obj[i]['web'];
 
+        texto = texto.replaceAll('<','&lt;');
+        texto = texto.replaceAll('>','&gt;');
+        texto = texto.replaceAll('&lt;','<code>&lt;');
+        texto = texto.replaceAll('&gt;','&gt;</code>');
+
         html += '<tr><td><u>Analizer</u>:  <b>'+web+'</b></td></tr>';
         html += '<tr><td><u>Result</u>:  <b>'+tipo+'</b></td></tr>';
         html += '<tr><td><u>Message:</u></td></tr>';
@@ -577,15 +582,15 @@ function print_report_result(keyST){
             html += '<tr><td><u>Posible solution</u>:</td></tr>';
             html += '<tr><td>'+obj[i]['solucion']+'</td></tr>';
         }
-        html += '<tr><td><u>Code</u>:</td></tr>';
         let c_len = codigo.length;
         if(c_len>0){
+            html += '<tr><td><u>Code</u>:</td></tr>';
             html += '<tr><td>';
             for (var j = 0; j < c_len; j++) {
-                codigot = codigo[j].replace('<','&lt;');
-                codigot = codigot.replace('>','&gt;');
+                codigot = codigo[j].replaceAll('<','&lt;');
+                codigot = codigot.replaceAll('>','&gt;');
 
-                html += '<code>'+codigot+'</code><br>';
+                html += '<code class="codigo_analisis" style="cursor: pointer;">'+codigot+'</code><br>';
             }
             /*
             codigo = codigo[i].replace('<','&lt;');
@@ -600,9 +605,5 @@ function print_report_result(keyST){
     return html;
 
     //https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus
-
-
-
-
 
 }
