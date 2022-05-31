@@ -21,13 +21,16 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route('/tablas.js')
 def tablas():
-    #return send_file('../ac_check/JS/tablas.js',mimetype='text/js')
     return send_from_directory('../ac_check/JS/','tablas.js', mimetype='text/javascript')
 
 @app.route('/flecha.png')
 def flecha():
-    #return send_file('../ac_check/JS/tablas.js',mimetype='text/js')
     return send_from_directory('../ac_check/images/','arrow.png', mimetype='image/gif')
+
+@app.route('/flecha_arriba.png')
+def flecha_arriba():
+    return send_from_directory('../ac_check/images/','arrow_up.png', mimetype='image/gif')
+
 
 def escribir_texto(texto, html_):
     txt_nuevo=""            
