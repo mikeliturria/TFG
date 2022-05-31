@@ -58,11 +58,11 @@ function update(){
     localStorage.setItem('json_resultados',JSON.stringify(json_resultados));
 
 
-    var html_results = "<div style='text-align:center'>";
-    html_results += "<table class='tabla_RES'><tr><th style='background-color:#C8FA8C' title='Passed'>P</th>";
-    html_results += "<th style='background-color:#FA8C8C' title='Failed'>F</th><th style='background-color:#F5FA8C' title='Can&#39;t tell'>CT</th>";
-    html_results += "<th title='Not Present'>NP</th><th style='background-color:#8CFAFA' title='Not checked'>NC</th></tr>";
-    html_results += "<tr><th>"+c_passed+"</th><th>"+c_failed+"</th><th>"+c_cannot_tell+"</th><th>"+c_not_present+"</th><th>"+c_not_checked+"</th></tr>"
+    var html_results = "<div style='text-align:center'><br>";
+    html_results += "<table class='tabla_RES'><tr><th style='background-color:#C8FA8C !important;' title='Passed'>P</th>";
+    html_results += "<th style='background-color:#FA8C8C !important;' title='Failed'>F</th><th style='background-color:#F5FA8C !important;' title='Can&#39;t tell'>CT</th>";
+    html_results += "<th title='Not Present' style='background-color:#FFFFFF !important;'>NP</th><th style='background-color:#8CFAFA !important;' title='Not checked'>NC</th></tr>";
+    html_results += "<tr><th style='background-color:#FFFFFF !important;'>"+c_passed+"</th><th style='background-color:#FFFFFF !important;'>"+c_failed+"</th><th style='background-color:#FFFFFF !important;'>"+c_cannot_tell+"</th><th style='background-color:#FFFFFF !important;'>"+c_not_present+"</th><th style='background-color:#FFFFFF !important;'>"+c_not_checked+"</th></tr>"
 
     html_results += "</table></div>";
 
@@ -71,9 +71,9 @@ function update(){
 
 
     var tabla_contenido= "<table class='tabla_contenido' style='width:100%; font-size:10px'>";
-    tabla_contenido += "<tr><th style='width:70%;font-size:12px'>Standard</th><th style='background-color:#C8FA8C' title='Passed'>P</th>";
+    tabla_contenido += "<tr><th style='width:68% !important;font-size:12px !important;background-color:white !important'>Standard</th><th style='background-color:#C8FA8C' title='Passed'>P</th>";
     tabla_contenido += "<th style='background-color:#FA8C8C' title='Failed'>F</th><th style='background-color:#F5FA8C' title='Can&#39;t tell'>CT</th>";
-    tabla_contenido += "<th title='Not Present'>NP</th><th style='background-color:#8CFAFA' title='Not checked'>NC</th></tr></table>";
+    tabla_contenido += "<th title='Not Present' style='background-color:#FFFFFF !important;'>NP</th><th style='background-color:#8CFAFA' title='Not checked'>NC</th></tr></table>";
     
     /*
     tabla_contenido += '<tr><td><a href="javascript:cambiar_tabla(\'1\')">1 Perceivable</a></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>';

@@ -1,10 +1,13 @@
 .tabla_RES th{
-	text-align: center;
-	width:50px;
+	text-align: center !important;
+  color: black  !important;
+  background-color: white;
+	width:50px !important;
 }
 
-.tabla_contenido a{
-	all: none;
+.tabla_contenido th{
+  color: black !important;
+  font-family: 'Helvetica' !important;
 	font-size: 11px;
 
 }
@@ -21,62 +24,75 @@
 .boton_tabla:hover {background: #eee;}
 
 .collapsible_tabla {
-  background-color: white;
-  color:black;
-  cursor: pointer;
-  padding: 10px;
-  width: 100%;
-  border: none;
-  text-align: left;
-  outline: none;
-  font-size: 12px;
+  background-color: white  !important;
+  color:black  !important;
+  cursor: pointer  !important;
+  padding: 10px !important;
+  width: 100% !important;
+  border: none !important;
+  text-align: left !important;
+  outline: none !important;
+  font-size: 12px !important;
 }
 
 .active, .collapsible_tabla:hover, .collapsible_tabla2:hover {
-  color: white;
-  background-color: #00B4D5;
+  color: white !important;
+  background-color: #00B4D5 !important;
 }
 
 .content_tabla {
   display: none;
-  overflow: hidden;
-  font-size: 10px;
+  overflow: hidden !important;
+  font-size: 10px !important;
 
 }
 
 .collapsible_tabla2 {
-  background-color: #C7D1D3;
-  color:black;
-  cursor: pointer;
-  padding: 10px;
-  width: 100%;
-  border: none;
-  text-align: left;
-  outline: none;
+  background-color: #C7D1D3 !important;
+  color:black !important;
+  cursor: pointer !important;
+  padding: 10px !important;
+  width: 100% !important;
+  border: none !important;
+  text-align: left !important;
+  outline: none !important;
+  font-size: 10px !important;
 }
 
 .collapsible_tabla3 {
-  color:black;
-  cursor: pointer;
-  padding: 10px;
-  width: 100%;
-  border: none;
-  text-align: left;
-  outline: none;
-  font-size: 10px;
+  color:black !important;
+  cursor: pointer !important;
+  padding: 10px !important;
+  width: 100% !important;
+  border: none !important;
+  text-align: left !important;
+  outline: none !important;
+  font-size: 10px !important;
 }
 
+/*
 .collapsible_tabla,.collapsible_tabla2 td{
-  white-space:nowrap;
-  }
+  white-space:nowrap !important;
+}
+*/
+.collapsible_tabla{
+  white-space:nowrap !important;
+}
 
 .tabla_resultados {
-  width:100%;
-  font-size:12px
+  width:100% !important;
+  font-size:12px !important;
+  overflow-wrap: anywhere !important;
 }
 .tabla_resultados th{
-  height: 40px; 
+  height: 40px !important; 
 }
 .tabla_resultados td{
-  padding-left:10px
+  padding-left:10px !important;
+}
+
+.codigo_analisis{
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+
 }

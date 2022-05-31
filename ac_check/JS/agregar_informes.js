@@ -33,7 +33,7 @@ function main(){
     var texto = "";
 
     if (json == null){
-        texto = "<div style='text-align:center'><text style='font-size:14px'>Sin datos</text></div>";
+        texto = "<div style='text-align:center'><text style='font-size:14px'>No data stored</text></div>";
     }else{
         //texto = "<pre><code>"+JSON.stringify(json, null, 4)+"</pre></code>";
         texto = jsonTabla;
@@ -221,6 +221,9 @@ function merge_audit_samples(primario,secundario){
         var au1 = primario.auditSample[i];
         var au2 = secundario.auditSample[i];
 
+        var codigos1 = primario.auditSample[i].result.codigo_error;
+        var codigos2 = secundario.auditSample[i].result.codigo_error;
+
         switch(true){
 
             //Caso el primero untested y el segundo distinto de untested
@@ -246,6 +249,31 @@ function merge_audit_samples(primario,secundario){
 
             default:
                 break;
+        }
+        if(codigos1 !== undefined && codigos2 !== undefined){
+            //Ponemos los códigos
+            switch(true){
+                //Caso uno vacio y el otro lleno
+                case (codigos1.length === 0 && codigos2.length !==0):
+                    primario.auditSample[i].result.codigo_error = codigos2;
+                    break;
+                case (codigos1.length !== 0 && codigos2.length ===0):
+                    primario.auditSample[i].result.codigo_error = codigos1;
+                    break;
+                case (codigos1.length !== 0 && codigos2.length !==0):
+                    let array_merged = codigos1.concat(codigos2);
+                    primario.auditSample[i].result.codigo_error = array_merged;
+                    break;
+                default:
+                    primario.auditSample[i].result.codigo_error = [];
+            }
+        }else{
+            if(codigos1 !== undefined){
+                primario.auditSample[i].result.codigo_error = codigos1;
+            }
+            if(codigos2 !== undefined){
+                primario.auditSample[i].result.codigo_error = codigos2;     
+            }
         }
 
 

@@ -1,5 +1,5 @@
 .sidenav_s {
-  font-family: 'Helvetica';
+  font-family: 'Helvetica' !important;
   all: initial;
   all:  unset;
   height: 100%;
@@ -16,11 +16,11 @@
 
 .titulo_sb{
   all: unset;
-  font-family: 'Helvetica';
-  font-size: 16px;
-  color: black;
-  text-align: center;
-  text-decoration:underline;
+  font-family: 'Helvetica' !important;
+  font-size: 16px !important;
+  color: black !important;
+  text-align: center !important;
+
 
 }
 
@@ -42,14 +42,14 @@
 }
 
 .loader_s {
-  margin-left: 75px;
-  border: 16px solid #f3f3f3;
-  display: flex;
-  justify-content: center;
-  border-radius: 50%;
-  border-top: 16px solid #3498db;
-  width: 50px;
-  height: 50px;
+  margin-left: 75px !important;;
+  border: 16px solid #f3f3f3 !important;;
+  display: flex !important;;
+  justify-content: center !important;;
+  border-radius: 50% !important;;
+  border-top: 16px solid #3498db !important;;
+  width: 50px !important;;
+  height: 50px !important;;
   -webkit-animation: spin 2s linear infinite; /* Safari */
   animation: spin 2s linear infinite;
 }
@@ -66,77 +66,80 @@
 }
 
 .boton_principal_sn {
-  margin-top: 50px;
-  margin-bottom: 50px;
-  position: absolute;
-  margin-left: 30px;
-  border-radius: 5px;
-  border: 2px solid #005a6a;
-  background-color: #005a6a;
-  color: white;
-  justify-content: center;
-  padding: 8px 12px 8px 12px;
-  align-items: center;
-  display: inline-flex;
-  text-align: center;
-  font-size: 13px;
-  font-weight: bold;
+  cursor: pointer !important;
+  margin-top: 50px !important;
+  margin-bottom: 50px !important;
+  position: absolute !important;
+  margin-left: 30px !important;
+  border-radius: 5px !important;
+  border: 2px solid #005a6a !important;
+  background-color: #005a6a !important;
+  color: white !important;
+  justify-content: center !important;
+  padding: 8px 12px 8px 12px !important;
+  align-items: center !important;
+  display: inline-flex !important;
+  text-align: center !important;
+  font-size: 13px !important;
+  font-weight: bold !important;
 }
 
 .boton_secundario_sn {
-  position: absolute;
-  margin-left: 40px;
-  margin-bottom: 50px;
-  margin-top: 25px;
-  border-radius: 5px;
-  border: 2px solid #005a6a;
-  background-color: white;
-  color: #005a6a;
-  justify-content: center;
-  padding: 8px 12px 8px 12px;
-  align-items: center;
-  display: inline-flex;
-  text-align: center;
-  font-size: 13px;
-  font-weight: bold;
+  cursor: pointer !important;
+  position: absolute !important;
+  margin-left: 30px !important;
+  margin-bottom: 50px !important;
+  margin-top: 25px !important;
+  border-radius: 5px !important;
+  border: 2px solid #005a6a !important;
+  background-color: white !important;
+  color: #005a6a !important;
+  justify-content: center !important;
+  padding: 8px 12px 8px 12px !important;
+  align-items: center !important;
+  display: inline-flex !important;
+  text-align: center !important;
+  font-size: 13px !important;
+  font-weight: bold !important;
 }
 
 .boton_secundario_sn2 {
-  position: absolute;
-  margin-left: 25px;
-  margin-bottom: 50px;
-  margin-top: 50px;
-  border-radius: 5px;
-  border: 2px solid #005a6a;
-  background-color: white;
-  color: #005a6a;
-  justify-content: center;
-  padding: 8px 12px 8px 12px;
-  align-items: center;
-  display: inline-flex;
-  text-align: center;
-  font-size: 13px;
-  font-weight: bold;
-  cursor: pointer;
+  position: absolute !important;
+  margin-left: 35px !important;
+  margin-bottom: 50px !important;
+  margin-top: 50px !important;
+  border-radius: 5px !important;
+  border: 2px solid #005a6a !important;
+  background-color: white !important;
+  color: #005a6a !important;
+  justify-content: center !important;
+  padding: 8px 12px 8px 12px !important;
+  align-items: center !important;
+  display: inline-flex !important;
+  text-align: center !important;
+  font-size: 13px !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
 
 }
 
 .boton_principal_sn2 {
-  margin-top: 50px;
-  margin-bottom: 50px;
-  position: absolute;
-  margin-left: 28px;
-  border-radius: 5px;
-  border: 2px solid #005a6a;
-  background-color: #005a6a;
-  color: white;
-  justify-content: center;
-  padding: 8px 12px 8px 12px;
-  align-items: center;
-  display: inline-flex;
-  text-align: center;
-  font-size: 13px;
-  font-weight: bold;
+  cursor: pointer !important;
+  margin-top: 50px !important;
+  margin-bottom: 50px !important;
+  position: absolute !important;
+  margin-left: 32px !important;
+  border-radius: 5px !important;
+  border: 2px solid #005a6a !important;
+  background-color: #005a6a !important;
+  color: white !important;
+  justify-content: center !important;
+  padding: 8px 12px 8px 12px !important;
+  align-items: center !important;
+  display: inline-flex !important;
+  text-align: center !important;
+  font-size: 13px !important;
+  font-weight: bold !important;
 }
 
 
