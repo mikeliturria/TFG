@@ -35,7 +35,7 @@ if(typeof init === 'undefined'){
 			codigo_nav+= '<label id="auto" name="auto" class="boton_principal_sn">Get automatically <br> generated report</label><br><br><br><br>';
 			codigo_nav+= '<label class="boton_secundario_sn2"><input id="file-upload-button" type="file" style="display: none;" accept=".json"/>Upload a report</label><br><br><br>';
 			codigo_nav+= '<label id="download" name="download" class="boton_principal_sn2">Download report</label><br><br><br>';
-			codigo_nav+= '<br><br><p class="titulo_sb">&nbsp;<u>Report content</u>:</p><br><p id="tabla_res"></label><br><br><p id="tabla_contenido"></p><br><br><br><script type="text/javascript" src="/JS/agregar_informes.js"></script><script type="text/javascript" src="http://127.0.0.1:5000/tablas.js"></script><script src="/JS/funciones_jquery.js"></script>';
+			codigo_nav+= '<br><br><p class="titulo_sb">&nbsp;<u>Report content</u>:</p><p id="tabla_res"></label><br><br><p id="tabla_contenido"></p><br><br><br><script type="text/javascript" src="/JS/agregar_informes.js"></script><script type="text/javascript" src="http://127.0.0.1:5000/tablas.js"></script><script src="/JS/funciones_jquery.js"></script>';
 			document.getElementById('sidenav_s').innerHTML=codigo_nav;
 
 		}else{

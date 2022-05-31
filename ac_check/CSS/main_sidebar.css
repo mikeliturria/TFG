@@ -12,6 +12,7 @@
   overflow-x: hidden;
   padding-top: 20px;
   color: black;
+  line-height: 1.5 !important;
 }
 
 .titulo_sb{
@@ -31,6 +32,7 @@
   color: #818181;
   display: block;
 }
+
 
 .sidenav_s a:hover {
   color: #f1f1f1;
