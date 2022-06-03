@@ -179,20 +179,22 @@ $(document).ready(function(){
 
   function mt_ac(){
      //Foto
-    if(txt.includes(' src=')){
+    if(txt.includes(' src=') || txt.includes(' src =')){
       mt_ac_src();
-    }else if(txt.includes(' href=')){
+    }else if(txt.includes(' href=') || txt.includes(' href =')){
       mt_ac_href();
-    }else{  //
-      //Primero probamos id
-      txt_for_class = txt;
-      if(txt.includes(' id=')){
-        mt_ac_id();
-      }
-      //Probamos con la clase, solo si no se ha encontrado ya
-      if(!pintado && txt_for_class.includes(' class=')){
-        mt_ac_class();
-      }
+    }  //
+    //Primero probamos id
+    txt_for_class = txt;
+    if(!pintado && txt.includes(' id=') || txt.includes(' id =')){
+      mt_ac_id();
+    }
+    //Probamos con la clase, solo si no se ha encontrado ya
+    if(!pintado && (txt_for_class.includes(' class=') || txt_for_class.includes(' class ='))){
+      mt_ac_class();
+    }
+    if(!pintado && (txt.includes(' name=') || txt.includes(' name ='))){
+      mt_ac_name();
     }
   }
 
@@ -201,14 +203,28 @@ $(document).ready(function(){
     let posEspa = eti.search(' ');
     let posCierEti = eti.indexOf('>');
     let posRelativaEtiqueta = eti.search(' src=');
+    if(posRelativaEtiqueta === -1){
+      //Caso sería "src =" 
+      posRelativaEtiqueta =eti.indexOf(' src =')+1;
+    }
     if(posCierEti ===-1 || posEspa < posCierEti){
       eti = eti.substring(0,posEspa); 
     }else{
       eti = eti.substring(0,posCierEti); 
     }
     let pos = text.search(' src=');
-    txt = txt.substring(pos+6);
-    let posCom = txt.search('"');
+    if(pos === -1){
+      pos = text.indexOf(' src =') + 1;
+    }
+    let ele = text.charAt(pos+5);
+    pos = pos +5;
+    if(ele === " "){
+      pos = pos + 1;
+      ele = text.charAt(pos);
+    }
+    
+    let txt = text.substring(pos+1);
+    let posCom = txt.search(ele);
     let posPun = txt.indexOf('...');
 
     let ubicacion_arbol;
@@ -255,12 +271,24 @@ $(document).ready(function(){
 
     //Sacamos el href
     let href_pos = txt.indexOf(' href=');
-    cierre_POS = txt.indexOf('>');
-    href = txt.substring(href_pos+7);
-    posCom = href.search('"');
+    if(href_pos === -1){
+      href_pos =txt.indexOf(' href =')+1;
+    }
+    let cierre_POS = txt.indexOf('>');
+
+    let ele = text.charAt(href_pos+6);
+    href_pos = href_pos + 6;
+    if(ele === " "){
+      href_pos = href_pos + 1;
+      ele = text.charAt(href_pos);
+    }
+
+
+    href = txt.substring(href_pos+1);
+    posCom = href.search(ele);
     posPun = href.indexOf('...');
     
-    if(href_pos > cierre_POS){
+    if(cierre_POS !== -1 && href_pos > cierre_POS){
       //Significa que el href es de algún hijo
       if(posCom!==-1 && posCom<posPun){
         href = href.substring(0,posCom);  
@@ -314,7 +342,15 @@ $(document).ready(function(){
     let eti = text.substring(1);
     let posEspa = eti.search(' ');
     posRelativaEtiqueta = eti.search(' id=');
+    if(posRelativaEtiqueta === -1){
+      //Caso sería "src =" 
+      posRelativaEtiqueta = eti.search(' id =')+1;
+    }
     posRelativaClase = eti.search(' class=');
+    if(posRelativaClase === -1){
+      //Caso sería "src =" 
+      posRelativaClase = eti.search(' class =')+1;
+    }
     posCierEti = eti.indexOf('>');
     if(posCierEti ===-1 || posEspa < posCierEti){
       eti = eti.substring(0,posEspa); 
@@ -329,14 +365,29 @@ $(document).ready(function(){
     }
 
     pos = txt.search(' id=');
-    txt = txt.substring(pos+5);
-    posCom = txt.search('"');
+    if(pos === -1){
+      //Caso sería "src =" 
+      pos = txt.search(' id =')+1;
+    }
+    let ele = txt.charAt(pos+4);
+    pos = pos +4;
+    if(ele === " "){
+      pos = pos + 1;
+      ele = txt.charAt(pos);
+    }
+    txt = txt.substring(pos+1);
+    posCom = txt.search(ele);
     posPun = txt.indexOf('...');
     if(posCom!== -1 && posCom<posPun){
       //Hemos encontrado id
       //pintado = true;
       txt2 = txt.substring(0,posCom);
-      src = '//'+eti+'['+ubicacion_arbol+'@id="'+txt2+'"]';
+      if (src === ""){
+        src = '//'+eti+'['+ubicacion_arbol+'@id="'+txt2+'"]';
+      }else{
+        src = src.substring(0,src.length-1);
+        src = src + ' and '+ubicacion_arbol+'@id="'+txt2+'"]';
+      }
       //actualizar_ultimo(src);            
       //$(_x(src))[0].setAttribute('style','border: 5px solid red;');
       //$(_x(src))[0].scrollIntoView();
@@ -351,10 +402,20 @@ $(document).ready(function(){
       //eti = eti.substring(0,posEspa);
       let clase_src = '';
       //Comprobamos si tiene una clase valida
-      if(text.includes(' class=')){
+      if(text.includes(' class=') || text.includes(' class =')){
         let posCla = text.search(' class=');
-        let clase = text.substring(posCla+8);
-        let posCom_ = clase.search('"');
+        if(posCla === -1){
+          //Caso sería "src =" 
+          posCla = text.search(' class =')+1;
+        }
+        let ele = text.charAt(posCla+7);
+        posCla = posCla +7;
+        if(ele === " "){
+          posCla = posCla + 1;
+          ele = text.charAt(posCla);
+        }
+        let clase = text.substring(posCla+1);
+        let posCom_ = clase.search(ele);
         if(posRelativaClase<posCierEti){
           ubicacion_arbol2 = "./";
         }else{
@@ -389,6 +450,10 @@ $(document).ready(function(){
     let posEspa = eti.search(' ');
     posCierEti = eti.indexOf('>');
     posRelativaEtiqueta = eti.search(' class=');
+    if(posRelativaEtiqueta === -1){
+      //Caso sería "src =" 
+      posRelativaEtiqueta = eti.search(' class =')+1;
+    }
     if(posCierEti ===-1 || posEspa < posCierEti){
       eti = eti.substring(0,posEspa); 
     }else{
@@ -403,55 +468,162 @@ $(document).ready(function(){
 
 
     txt = txt_for_class;
-    pos = txt.search(' class=');
-    txt2 = txt.substring(pos+8);
-    posCom = txt2.search('"');
-    posPun = txt2.indexOf('...');
+    let pos = txt.search(' class=');
+    let txt2 = "";
+    let elem_corte = "";
+    if(pos === -1){
+      pos = txt.search(' class =')+1;
+    }
+
+    elem_corte = txt.charAt(pos+7);
+    pos = pos +7;
+    if(elem_corte === " "){
+      pos = pos + 1;
+      elem_corte = txt.charAt(pos);
+    }
+
+    txt2 = txt.substring(pos+1);
+    let posCom = txt2.search(elem_corte);
+    let posPun = txt2.indexOf('...');
     
     if(posCom!== -1 && posCom<posPun){
       //Hemos encontrado class
       txt2 = txt2.substring(0,posCom);
-      src = '//'+eti+'['+ubicacion_arbol+'@class="'+txt2+'"]';
-      if($(_x(src)).length === 1){
+      if (src === ""){
+        src = '//'+eti+'['+ubicacion_arbol+'@class="'+txt2+'"]';
+      }else{
+        src = src.substring(0,src.length-1);
+        src = src + ' and '+ubicacion_arbol+'@class="'+txt2+'"]';
+      }
+      //if($(_x(src)).length === 1){
         /*
         pintado = true;
         actualizar_ultimo(src);
         $(_x(src))[0].setAttribute('style','border: 5px solid red;');
         $(_x(src))[0].scrollIntoView();
         */
-        comprobar_pintado(src);
-      }else{
-        //Tenemos clase parcial
-        txt2 = txt.substring(0,posPun-1);
+      comprobar_pintado(src);
+    }else{
+      //Tenemos clase parcial
+      txt2 = txt2.substring(0,posPun-1);
+      if (src === ""){
         src = '//'+eti+'[contains('+ubicacion_arbol+'@class, "'+txt2+'")]';
-        comprobar_pintado(src);
-        /*
-        if($(_x(src)).length === 1){
-
-            pintado = true;
-            let class_entero =  $(_x(src))[0].getAttribute('class');
-            actualizar_ultimo('//'+eti+'[@class="'+class_entero+'"]');
-            $(_x(src))[0].setAttribute('style','border: 5px solid red;');
-            $(_x(src))[0].scrollIntoView();
-          }
-          */
+      }else{
+        src = src.substring(0,src.length-1);
+        src = src + ' and contains('+ubicacion_arbol+'@class, "'+txt2+'")]';
       }
+      comprobar_pintado(src);
+      /*
+      if($(_x(src)).length === 1){
+
+          pintado = true;
+          let class_entero =  $(_x(src))[0].getAttribute('class');
+          actualizar_ultimo('//'+eti+'[@class="'+class_entero+'"]');
+          $(_x(src))[0].setAttribute('style','border: 5px solid red;');
+          $(_x(src))[0].scrollIntoView();
+        }
+        */
+    }
+  }
+  
+
+  function mt_ac_name(){
+    let eti = text.substring(1);
+    let posEspa = eti.search(' ');
+    posCierEti = eti.indexOf('>');
+    posRelativaEtiqueta = eti.search(' name=');
+    if(posRelativaEtiqueta === -1){
+      //Caso sería "src =" 
+      posRelativaEtiqueta = eti.search(' name =')+1;
+    }
+    if(posCierEti ===-1 || posEspa < posCierEti){
+      eti = eti.substring(0,posEspa); 
+    }else{
+      eti = eti.substring(0,posCierEti); 
+    }
+
+    if(posCierEti ===-1 || posRelativaEtiqueta<posCierEti){
+      ubicacion_arbol = "./";
+    }else{
+      ubicacion_arbol = ".//*/"; 
+    }
+
+
+    txt = txt_for_class;
+    let pos = txt.search(' name=');
+    let txt2 = "";
+    let elem_corte = "";
+    if(pos === -1){
+      pos = txt.search(' name =')+1;
+    }
+
+    elem_corte = txt.charAt(pos+6);
+    pos = pos +6;
+    if(elem_corte === " "){
+      pos = pos + 1;
+      elem_corte = txt.charAt(pos);
+    }
+
+    txt2 = txt.substring(pos+1);
+    let posCom = txt2.search(elem_corte);
+    let posPun = txt2.indexOf('...');
+    
+    if(posCom!== -1 && posCom<posPun){
+      //Hemos encontrado class
+      txt2 = txt2.substring(0,posCom);
+      if (src === ""){
+        src = '//'+eti+'['+ubicacion_arbol+'@name="'+txt2+'"]';
+      }else{
+        src = src.substring(0,src.length-1);
+        src = src + ' and '+ubicacion_arbol+'@name="'+txt2+'"]';
+      }
+      //if($(_x(src)).length === 1){
+        /*
+        pintado = true;
+        actualizar_ultimo(src);
+        $(_x(src))[0].setAttribute('style','border: 5px solid red;');
+        $(_x(src))[0].scrollIntoView();
+        */
+      comprobar_pintado(src);
+    }else{
+      //Tenemos clase parcial
+      txt2 = txt2.substring(0,posPun-1);
+      if (src === ""){
+        src = '//'+eti+'[contains('+ubicacion_arbol+'@name, "'+txt2+'")]';
+      }else{
+        src = src.substring(0,src.length-1);
+        src = src + ' and contains('+ubicacion_arbol+'@name, "'+txt2+'")]';
+      }
+      comprobar_pintado(src);
+      /*
+      if($(_x(src)).length === 1){
+
+          pintado = true;
+          let class_entero =  $(_x(src))[0].getAttribute('class');
+          actualizar_ultimo('//'+eti+'[@class="'+class_entero+'"]');
+          $(_x(src))[0].setAttribute('style','border: 5px solid red;');
+          $(_x(src))[0].scrollIntoView();
+        }
+        */
     }
   }
 
   function mt_am(){
-    if(txt.includes(' src=')){
+    if(txt.includes(' src=') || txt.includes(' src =')){
       mt_am_src();
 
       //OJO! PARA https://eoidonostiaheo.hezkuntza.net/documents/5702472/5772458/ikasgunea.jpg/68231b11-6b6f-85ff-381e-0bb7bf62c29e?t=1603723910526 NO funciona
-    }else if(!txt.includes(' id=') && txt.includes(' href=')){
+    }else if(!txt.includes(' id=') && (txt.includes(' href=') || txt.includes(' href ='))){
       mt_am_href();
-    }else{
-      if(txt.includes(' id=')){
+    }
+    if(txt.includes(' id=') || txt.includes(' id =')){
         mt_am_id();
-      }else if(txt.includes(' class=')){
-        mt_am_class();
-      }
+    }else if(txt.includes(' class=') || txt.includes(' class =')){
+      mt_am_class();
+    }
+
+    if(!pintado && (txt.includes(' name=') || txt.includes(' name ='))){
+      mt_am_name();
     }
 
     //Vemos si todavía no ha sido pintado, si no lo ha sido probamos a ver si tiene nodos hijos puede encontrar
@@ -464,29 +636,43 @@ $(document).ready(function(){
 
     let eti = text.substring(1);
     let posEspa = eti.search(' ');
-    posCierEti = eti.indexOf('>');
-    posRelativaEtiqueta = eti.indexOf(' src=');
+    let posCierEti = eti.indexOf('>');
+    let posRelativaEtiqueta = eti.indexOf(' src=');
+    if(posRelativaEtiqueta === -1){
+      //Caso sería "src =" 
+      posRelativaEtiqueta = eti.indexOf(' src =')+1;
+    }
+
     if(posEspa < posCierEti){
       eti = eti.substring(0,posEspa); 
     }else{
       eti = eti.substring(0,posCierEti); 
     }
-
+    let ubicacion_arbol =  "";
     if(posRelativaEtiqueta<posCierEti){
       ubicacion_arbol = "./";
     }else{
       ubicacion_arbol = ".//*/"; 
     }
 
-    pos = txt.search(' src=');
-    txt = txt.substring(pos+6);
-    console.log('TT '+txt);
-    pos = txt.search('"');
-    txt2= txt.substring(0,pos);
-    console.log('TT2 '+txt2);
+    let pos = text.search(' src=');
+    if(pos === -1){
+      //Caso sería "src =" 
+      pos = text.indexOf(' src =')+1;
+    }
+    let ele = text.charAt(pos+5);
+    pos = pos +5;
+    if(ele === " "){
+      pos = pos + 1;
+      ele = text.charAt(pos);
+    }
+
+
+    let txt = text.substring(pos+1);
+    pos = txt.search(ele);
+    let txt2= txt.substring(0,pos);
 
     src = '//'+eti+'['+ubicacion_arbol+'@src="'+txt2+'"]';
-    console.log('SRC1 '+src);
 
     //A veces accessmonitor falla y saca src dobles, comprobamos si puede ser el caso
     /*
@@ -501,16 +687,38 @@ $(document).ready(function(){
     if((posJPG1 === -1 && posPNG1 === -1) ||(posJPG2!== -1 && posCOM1 !==-1 && posJPG2>posCOM1 ) || (posPNG2 !==-1 && posCOM2 !==-1  && posPNG2>posCOM2)){
     */
     let possrc = text.indexOf(' src=');
-    let ele = text.charAt(possrc+5);
-    let pos1 = text.indexOf(ele, possrc+6);
-    let pos2 = text.indexOf(ele+' ', possrc+6);
-    let pos3 = text.indexOf(ele+'>', possrc+6);
+    let pos1 = 0;
+    let pos2 = 0;
+    let pos3 = 0;
+    if(possrc === -1){
+      possrc = text.indexOf(' src =') + 1;
+    }
+    let ele2 = text.charAt(possrc+5);
+    possrc = possrc +5;
+    if(ele2 === " "){
+      possrc = possrc + 1;
+      ele2 = text.charAt(possrc);
+    }
+    pos1 = text.indexOf(ele2, possrc + 1);
+    pos2 = text.indexOf(ele2+' ', possrc + 1);
+    pos3 = text.indexOf(ele2+'>', possrc + 1);
     if(((pos2 === -1 || pos2>pos3) && pos3 !== -1 && pos3 !==pos1) ||(pos2 !== -1 && pos2 !==pos1) ){
       pos = text.search(' src=');
-      txt3 = text.substring(pos+6);
-      pos = txt3.search(ele);
+      if(pos === -1){
+        pos = text.search(' src =')+1;
+      }
+      let ele2 = text.charAt(pos+5);
+      pos = pos +5;
+      if(ele2 === " "){
+        pos = pos + 1;
+        ele = text.charAt(pos);
+      }
+
+
+      let txt3 = text.substring(pos+1);
+      pos = txt3.search(ele2);
       txt3= txt3.substring(pos+1);
-      pos = txt3.search(ele);
+      pos = txt3.search(ele2);
       txt3= txt3.substring(0,pos);
       src = '//'+eti+'['+ubicacion_arbol+'@src="'+txt3+'"]';
       console.log("SRC2: "+src);
@@ -546,7 +754,14 @@ $(document).ready(function(){
     let posEspa = eti.search(' ');
     posCierEti = eti.indexOf('>');
     posRelativaEtiqueta = eti.indexOf(' href=');
+    if(posRelativaEtiqueta === -1){
+      posRelativaEtiqueta = eti.indexOf(' href =')+1;
+    }
     posRelativaEtiqueta2 = eti.indexOf(' class=');
+    if(posRelativaEtiqueta2 === -1){
+      posRelativaEtiqueta2 = eti.indexOf(' class =')+1;
+    }
+
     if(posEspa < posCierEti){
       eti = eti.substring(0,posEspa); 
     }else{
@@ -562,8 +777,19 @@ $(document).ready(function(){
 
     //Sacamos el href
     let href_pos = txt.indexOf(' href=');
-    href = txt.substring(href_pos+7);
-    posCom = href.search('"');
+    if(href_pos === -1){
+      href_pos = txt.indexOf(' href =')+1;
+    }
+
+    let ele = txt.charAt(href_pos+6);
+    href_pos = href_pos +6;
+    if(ele === " "){
+      href_pos = href_pos + 1;
+      ele = txt.charAt(href_pos);
+    }
+
+    href = txt.substring(href_pos+1);
+    posCom = href.search(ele);
     href = href.substring(0,posCom);  
     src = '//'+eti+'['+ubicacion_arbol+'@href="'+href+'"';    
 
@@ -581,8 +807,18 @@ $(document).ready(function(){
         }
 
         pclase = txt.indexOf(' class=');
-        clase = txt.substring(pclase+8);
-        posCom = clase.indexOf('"');
+        if(pclase === -1){
+          pclase = txt.indexOf(' class =')+1;
+        }
+        let ele2 = txt.charAt(pclase+7);
+        pclase = pclase +7;
+        if(ele2 === " "){
+          pclase = pclase + 1;
+          ele2 = txt.charAt(pclase);
+        }
+
+        clase = txt.substring(pclase+1);
+        posCom = clase.indexOf(ele2);
         clase = clase.substring(0,posCom);
         src = src + ' and '+ubicacion_arbol2+'@class = "'+clase+'"]';
         /*
@@ -624,6 +860,10 @@ $(document).ready(function(){
     let posEspa = eti.search(' ');
     posCierEti = eti.indexOf('>');
     posRelativaEtiqueta = eti.indexOf(' id=');
+    if(posRelativaEtiqueta === -1){
+      posRelativaEtiqueta = eti.indexOf(' id =')+1;
+    }
+
     if(posEspa < posCierEti){
       eti = eti.substring(0,posEspa); 
     }else{
@@ -639,8 +879,18 @@ $(document).ready(function(){
 
 
     pos = txt.search(' id=');
-    txt2 = txt.substring(pos+5);
-    posCom = txt2.search('"');
+    if(pos === -1){
+      pos = txt.indexOf(' id =')+1;
+    }
+
+    let ele = txt.charAt(pos+4);
+    pos = pos +4;
+    if(ele === " "){
+      pos = pos + 1;
+      ele = txt.charAt(pos);
+    }
+    txt2 = txt.substring(pos+1);
+    posCom = txt2.search(ele);
     //Hemos encontrado id
     pintado = true;
     txt2 = txt2.substring(0,posCom);
@@ -658,6 +908,10 @@ $(document).ready(function(){
     let posEspa = eti.search(' ');
     posCierEti = eti.indexOf('>');
     posRelativaEtiqueta = eti.indexOf('class=');
+    if(posRelativaEtiqueta === -1){
+      posRelativaEtiqueta = eti.indexOf(' class =')+1;
+    }
+
     if(posEspa < posCierEti){
       eti = eti.substring(0,posEspa); 
     }else{
@@ -672,13 +926,29 @@ $(document).ready(function(){
 
 
     pos = txt.search(' class=');
-    txt2 = txt.substring(pos+8);
-    posCom = txt2.search('"');
+    if(pos === -1){
+      pos = txt.indexOf(' class =')+1;
+    }
+
+    let ele = txt.charAt(pos+7);
+    pos = pos +7;
+    if(ele === " "){
+      pos = pos + 1;
+      ele = txt.charAt(pos);
+    }
+
+    txt2 = txt.substring(pos+1);
+    posCom = txt2.search(ele);
 
     
     //Hemos encontrado class
     txt2 = txt2.substring(0,posCom);
-    src = '//'+eti+'['+ubicacion_arbol+'@class="'+txt2+'"]';
+    if (src === ""){
+      src = '//'+eti+'['+ubicacion_arbol+'@class="'+txt2+'"]';
+    }else{
+      src = src.substring(0,src.length-1);
+      src = src + ' and '+ubicacion_arbol+'@class="'+txt2+'"]';
+    }
     /*
     if($(_x(src)).length ===1){
       pintado = true;
@@ -687,6 +957,55 @@ $(document).ready(function(){
       $(_x(src))[0].scrollIntoView();
     }
     */
+    comprobar_pintado(src);
+  }
+
+  function mt_am_name(){
+    let eti = text.substring(1);
+    let posEspa = eti.search(' ');
+    posCierEti = eti.indexOf('>');
+    posRelativaEtiqueta = eti.indexOf('name=');
+    if(posRelativaEtiqueta === -1){
+      posRelativaEtiqueta = eti.indexOf(' name =')+1;
+    }
+
+    if(posEspa < posCierEti){
+      eti = eti.substring(0,posEspa); 
+    }else{
+      eti = eti.substring(0,posCierEti); 
+    }
+
+    if(posRelativaEtiqueta<posCierEti){
+      ubicacion_arbol = "./";
+    }else{
+      ubicacion_arbol = ".//*/"; 
+    }
+
+
+    pos = txt.search(' name=');
+    if(pos === -1){
+      pos = txt.indexOf(' name =')+1;
+    }
+
+    let ele = txt.charAt(pos+6);
+    pos = pos +6;
+    if(ele === " "){
+      pos = pos + 1;
+      ele = txt.charAt(pos);
+    }
+
+    txt2 = txt.substring(pos+1);
+    posCom = txt2.search(ele);
+
+    
+    //Hemos encontrado class
+    txt2 = txt2.substring(0,posCom);
+    if (src === ""){
+      src = '//'+eti+'['+ubicacion_arbol+'@name="'+txt2+'"]';
+    }else{
+      src = src.substring(0,src.length-1);
+      src = src + ' and '+ubicacion_arbol+'@name="'+txt2+'"]';
+    }
     comprobar_pintado(src);
   }
 
@@ -948,10 +1267,14 @@ $(document).ready(function(){
         }  
       };
       req.setRequestHeader('Content-Type', 'application/json');
+      
       req.send(JSON.stringify({
-          'url': url_local
-      }));
+          'url': url_local,
+          'AM': $('#AM_checkbox').is(":checked"),
+          'AC': $('#AC_checkbox').is(":checked")
 
+      }));
+      
 
       document.getElementById('tabla_res').innerHTML='<div class="loader_s"></div>';
 
@@ -975,4 +1298,16 @@ $(document).ready(function(){
 
   
 });
+
+
+$(".sn_label_paginas").click(function(){
+    let url =$(this).attr('id');
+    url = url.substring(0,2);
+    if(url === "AM"){
+       window.open("https://accessmonitor.acessibilidade.gov.pt/", '_blank').focus();
+    }
+    if(url === "AC"){
+       window.open("https://achecker.achecks.ca/checker/index.php", '_blank').focus();
+    }
+  });
 });
