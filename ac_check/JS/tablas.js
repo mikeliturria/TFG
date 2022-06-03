@@ -172,6 +172,7 @@ function codigos_por_nombres(){
     return cod
 }
 
+
 function cambiar_tabla(estandar){
 //function get_datos(estandar){
     console.log('Enrra');
@@ -423,9 +424,9 @@ function print_subsections(s){
         c_not_present =  datos[3];
         c_not_checked =  datos[4];
         st = sub_temas[keyST];
-        codigo_nav_st +='<button type="button" class="collapsible_tabla2"><table style="width:100%; table-layout: fixed; overflow-wrap: break-word;""><tr><td style="width:70%; white-space:normal;text-align: left;">';
+        codigo_nav_st +='<button type="button" class="collapsible_tabla2"><table style="width:100%; table-layout: fixed; overflow-wrap: break-word;""><tr><td style="font-size:10px;width:70%; white-space:normal;text-align: left;">';
         codigo_nav_st += st;
-        codigo_nav_st += '</td><td>'+c_passed+'</td><td>'+c_failed+'</td><td>'+c_cannot_tell+'</td><td>'+c_not_present+'</td><td>'+c_not_checked+'</td>';
+        codigo_nav_st += '</td><td style="font-size:10px;">'+c_passed+'</td><td style="font-size:10px;">'+c_failed+'</td><td style="font-size:10px;">'+c_cannot_tell+'</td><td style="font-size:10px;">'+c_not_present+'</td><td style="font-size:10px;">'+c_not_checked+'</td>';
         codigo_nav_st += '</tr></table></button><div class="content_tabla">';
         sst = sub_temasF(keyST);
         if (Object.keys(sst).length >0){
@@ -532,9 +533,9 @@ function print_sub_subsubsections(estandar){
         
         if(len>0){
             codigo_nav_st += '<td style="width:15%;"><img src="http://127.0.0.1:5000/flecha.png" alt="Desplegar informacion" height="20px"></td>';
-            codigo_nav_st += '<td style="width:55%;   text-align: left;">'+st+'</td>';
+            codigo_nav_st += '<td style="width:55%;  font-size:10px;  text-align: left;">'+st+'</td>';
         }else{
-            codigo_nav_st += '<td style="width:70%;   text-align: left;">'+st+'</td>';
+            codigo_nav_st += '<td style="width:70%;  font-size:10px;  text-align: left;">'+st+'</td>';
         }
         codigo_nav_st += '<td style="font-size:9px"><b>'+result_text+'</b></td>';
         codigo_nav_st += '</tr></table></button><div class="content_tabla">';
@@ -590,7 +591,7 @@ function print_report_result(keyST){
                 codigot = codigo[j].replaceAll('<','&lt;');
                 codigot = codigot.replaceAll('>','&gt;');
 
-                html += '<code class="codigo_analisis" style="cursor: pointer;">'+codigot+'</code><br>';
+                html += '<code class="codigo_analisis" style="cursor: pointer;">'+codigot+'</code><br><br>';
             }
             /*
             codigo = codigo[i].replace('<','&lt;');

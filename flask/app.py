@@ -31,6 +31,11 @@ def flecha():
 def flecha_arriba():
     return send_from_directory('../ac_check/images/','arrow_up.png', mimetype='image/gif')
 
+@app.route('/logo.png')
+@cross_origin()
+def logo():
+    return send_from_directory('../ac_check/images/','icon128.png', mimetype='image/gif')
+
 
 def escribir_texto(texto, html_):
     txt_nuevo=""            
@@ -102,16 +107,27 @@ def get_content_of_link(url,browser,tipo):
 def create_JSON():
     received_json = request.get_json()
     url = received_json['url']
+    AM = received_json['AM']
+    AC = received_json['AC']
     print("U: "+url)
+    print("AM: "+str(AM))
+    print("AC: "+str(AC))
+
+    informe_1 = {}
+    informe_2 = {}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex:
-      f1 = ex.submit(JSON_access_monitor, url)
-      f2 = ex.submit(achecker, url)
-      # Wait for results
-      informe = f1.result()
-      informe_2 = f2.result()
+        if AM:
+            f1 = ex.submit(JSON_access_monitor, url)
+        if AC:
+            f2 = ex.submit(achecker, url)
+        # Wait for results
+        if AM:
+            informe_1 = f1.result()
+        if AC:
+            informe_2 = f2.result()
 
-    informe_final = merge_reports(informe, informe_2)
+    informe_final = merge_reports(informe_1, informe_2)
     informe_final = fomat_informe(url,informe_final)
     
     return informe_final
@@ -136,6 +152,7 @@ def JSON_access_monitor(url):
     try:
         browser.get(url)
         timeout_in_seconds = 50
+        informe_casos = {}
         WebDriverWait(browser, timeout_in_seconds).until(ec.presence_of_element_located((By.CLASS_NAME, 'evaluation-table')))
         #Lo de abajo hace que se imprima la pagina
         html = browser.page_source
@@ -151,7 +168,6 @@ def JSON_access_monitor(url):
 
         rows = cabeza.find_all('tr')
 
-        informe_casos = {}
 
 
         for row in rows:
@@ -195,7 +211,7 @@ def JSON_access_monitor(url):
                     for i in array_respuesta:
                         i=i.replace('\n','')
                         i=i.replace('\t','')
-                        texto_link += i+"\n\n"
+                        texto_link += "     "+i+"\n\n"
                         afc_code.append(i)
 
                 texto_final += divc.p.text
@@ -240,7 +256,7 @@ def JSON_access_monitor(url):
                                 informe_casos[nombre_wag]['Resultado'] = 'Passed'
     
 
-                            texto_r = texto_Previo +"---------------------------------------- \n\n "+texto_Actual
+                            texto_r = texto_Previo +"\n\n---------------------------------------- \n\n "+texto_Actual
                             informe_casos[nombre_wag]['Texto'] = texto_r
                             informe_casos[nombre_wag]['Codigos'].append(objeto_codigos_fallantes)
 
@@ -328,6 +344,7 @@ def get_estandares_array(divc):
 
 
 def achecker(url):
+    informe_casos = {}
     ac = "https://achecker.achecks.ca/checker/index.php"
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')
@@ -356,13 +373,14 @@ def achecker(url):
         boton_submit.click()
         html = browser.page_source
 
-        informe = get_contenido_achecker(browser)
+        informe_casos = get_contenido_achecker(browser)
 
 
     except TimeoutException:
         print("I give up...")
     finally:
         browser.quit()
+        informe = informe_casos
         print("AC hecho")
         return informe
 
@@ -393,15 +411,17 @@ def get_contenido_achecker(browser):
         errores_y_lineas = []
         for tr in trs:
             td = tr.td 
-            linea_error= td.em
+            linea_error= td.em.text
             codigo = td.pre.code.text
             errores_y_lineas.append({
                 'linea':str(linea_error),
                 'codigo':str(codigo)
                 })
-        texto_Actual = 'The next ERROR was found: "'+problema+'". You can solve it with: "'+solucion+'". The error was in the following line(s): \n\n "'
+        solucion = solucion[8:]
+        solucion = solucion.strip()
+        texto_Actual = 'The next ERROR was found: "'+problema+'". You can solve it with: "'+solucion+'". The error was in the following line(s): \n\n'
         for er in errores_y_lineas:
-            texto_Actual+= 'LINE '+er['linea']+': "'+er['codigo']+'"\n\n'
+            texto_Actual+= '     '+er['linea']+': '+er['codigo']+'"\n\n'
         if text_criteria in codes:
             nombre_wag = codes[text_criteria]
             if nombre_wag in inf_casos:
@@ -454,16 +474,16 @@ def get_contenido_achecker(browser):
         errores_y_lineas = []
         for tr in trs:
             td = tr.td 
-            linea_error= td.em
+            linea_error= td.em.text
             codigo = td.pre.code.text
             errores_y_lineas.append({
                 'linea':str(linea_error),
                 'codigo':str(codigo)
                 })
 
-        texto_Actual = 'The next WARNING was found: "'+problema+'". The warning was in the following line(s): \n\n "'
+        texto_Actual = 'The next WARNING was found: "'+problema+'". The warning was in the following line(s): \n\n'
         for er in errores_y_lineas:
-            texto_Actual+= 'LINE '+er['linea']+': "'+er['codigo']+'".\n\n'
+            texto_Actual+= '     '+er['linea']+': '+er['codigo']+'".\n\n'
         if text_criteria in codes:
             nombre_wag = codes[text_criteria]
             if nombre_wag in inf_casos:
@@ -516,16 +536,16 @@ def get_contenido_achecker(browser):
         errores_y_lineas = []
         for tr in trs:
             td = tr.td 
-            linea_error= td.em
+            linea_error= td.em.text
             codigo = td.pre.code.text
             errores_y_lineas.append({
                 'linea':str(linea_error),
                 'codigo':str(codigo)
                 })
 
-        texto_Actual = 'A POTENTIAL PROBLEM was found: "'+problema+'". The potential problem was in the following line(s): \n\n "'
+        texto_Actual = 'A POTENTIAL PROBLEM was found: "'+problema+'". The potential problem was in the following line(s): \n\n '
         for er in errores_y_lineas:
-            texto_Actual+= 'LINE '+er['linea']+': "'+er['codigo']+'".\n\n'
+            texto_Actual+= '     '+er['linea']+': '+er['codigo']+'".\n\n'
         if text_criteria in codes:
             nombre_wag = codes[text_criteria]
             if nombre_wag in inf_casos:
@@ -573,14 +593,27 @@ def get_contenido_achecker(browser):
 
 
 def merge_reports(informe1, informe2):
-    autor1 = '@'+informe1['Tester_Name']
-    autor2 = '@'+informe2['Tester_Name']
-    tester_name = str(informe1['Tester_Name'])+' & '+str(informe2['Tester_Name'])
+    if informe1 == {}:
+        informe1 = informe2;
+        informe2 = {}
 
-    informe_final = {
+
+    autor1 = '@'+informe1['Tester_Name']
+    if len(informe2)>0:
+        autor2 = '@'+informe2['Tester_Name']
+        tester_name = str(informe1['Tester_Name'])+' & '+str(informe2['Tester_Name'])
+    else:
+        tester_name = str(informe1['Tester_Name'])
+    if 'RESULTADO' in informe1:
+        informe_final = {
            'Tester_Name': tester_name,
            'Summary': '@Access_monitor mark:'+informe1['RESULTADO']
-    }
+        }
+    else:
+        informe_final = {
+           'Tester_Name': tester_name,
+           'Summary': ''
+        }
 
     #Primero añadimos los datos del informe 1
     for key,value in informe1['Cases'].items():
@@ -590,37 +623,38 @@ def merge_reports(informe1, informe2):
             'Codigos': value['Codigos']
         }
 
-    #Ahora los del informe 2
-    for key,value in informe2['Cases'].items():
-        #Comprobamos si ya está en el informe
-        if key in informe_final:
-            resultado_Previo = informe_final[key]['Resultado']
-            texto_Previo = informe_final[key]['Texto']
-            resultado_Actual = value['Resultado']
-            texto_Actual = value['Texto']
+    if 'Cases' in informe2:
+        #Ahora los del informe 2
+        for key,value in informe2['Cases'].items():
+            #Comprobamos si ya está en el informe
+            if key in informe_final:
+                resultado_Previo = informe_final[key]['Resultado']
+                texto_Previo = informe_final[key]['Texto']
+                resultado_Actual = value['Resultado']
+                texto_Actual = value['Texto']
 
-            #informe_final[key]['Codigos'].append(value['Codigos'])
+                #informe_final[key]['Codigos'].append(value['Codigos'])
 
 
-            if resultado_Previo =='Failed'or resultado_Actual == 'Failed':
-                informe_final[key]['Resultado'] = 'Failed'
-            elif resultado_Previo =='Cannot Tell'or resultado_Actual == 'Cannot Tell':
-                informe_final[key]['Resultado'] = 'Cannot Tell'
+                if resultado_Previo =='Failed'or resultado_Actual == 'Failed':
+                    informe_final[key]['Resultado'] = 'Failed'
+                elif resultado_Previo =='Cannot Tell'or resultado_Actual == 'Cannot Tell':
+                    informe_final[key]['Resultado'] = 'Cannot Tell'
+                else:
+                    informe_final[key]['Resultado'] = 'Passed'
+
+
+                texto_r = texto_Previo +'*************'+autor2+'************* \n\n'+value['Texto']+'\n\n ************************** \n\n'
+                informe_final[key]['Texto'] = texto_r
+                for cod in value['Codigos']:
+                    informe_final[key]['Codigos'].append(cod)
             else:
-                informe_final[key]['Resultado'] = 'Passed'
+                informe_final[key] = {
+                    'Resultado' : value['Resultado'],
+                    'Texto' : '*************'+autor2+'************* \n\n'+value['Texto']+'\n\n ************************** \n\n',
+                    'Codigos': value['Codigos']
 
-
-            texto_r = texto_Previo +'*************'+autor2+'************* \n\n'+value['Texto']+'\n\n ************************** \n\n'
-            informe_final[key]['Texto'] = texto_r
-            for cod in value['Codigos']:
-                informe_final[key]['Codigos'].append(cod)
-        else:
-            informe_final[key] = {
-                'Resultado' : value['Resultado'],
-                'Texto' : '*************'+autor2+'************* \n\n'+value['Texto']+'\n\n ************************** \n\n',
-                'Codigos': value['Codigos']
-
-            } 
+                } 
     return informe_final
 
 def fomat_informe(url,informe):
