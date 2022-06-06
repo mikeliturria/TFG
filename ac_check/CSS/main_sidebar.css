@@ -17,11 +17,7 @@
   display: block !important;
   text-align: left !important;
 }
-/*
-.sidenav_s p{
-  line-height: 2.5 !important;
-}
-*/
+
 .sidenav_s br{
   line-height: 2!important;
 }
@@ -50,7 +46,7 @@
 }
 
 .main_s {
-  margin-left: 200px; /* Same as the width of the sidenav */
+  margin-left: 200px; 
   padding: 0px 10px;
 }
 

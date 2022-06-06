@@ -19,106 +19,50 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
-@app.route('/tablas.js')
-def tablas():
-    return send_from_directory('../ac_check/JS/','tablas.js', mimetype='text/javascript')
-
 @app.route('/flecha.png')
 def flecha():
+    """
+        Devuelve la flecha mirando para abajo
+    """
     return send_from_directory('../ac_check/images/','arrow.png', mimetype='image/gif')
 
 @app.route('/flecha_arriba.png')
 def flecha_arriba():
+    """
+        Devuelve la flecha mirando para arriba
+    """
     return send_from_directory('../ac_check/images/','arrow_up.png', mimetype='image/gif')
 
 @app.route('/logo.png')
 @cross_origin()
 def logo():
+    """
+        Devuelve el logo de AC-Check
+    """
     return send_from_directory('../ac_check/images/','icon128.png', mimetype='image/gif')
 
-
-def escribir_texto(texto, html_):
-    txt_nuevo=""            
-    pos = texto.find("<")
-    #pos = texto.find("&lt;")
-    entro = False
-    while pos != -1:
-        entro = True
-        txt_nuevo += texto[:pos]+"<code>&lt;"
-        texto = texto[pos+1:]
-        pos = texto.find(">")
-        #pos = texto.find("&gt;")
-        txt_nuevo += texto[:pos]+"&gt;</code>"
-        texto = texto[pos+1:]
-        pos = texto.find("<")
-        #pos = texto.find("&lt;")
-
-    if entro:
-        txt_nuevo += texto
-        html_ += "<td>"+txt_nuevo+"</td>"
-    else:
-        html_ += "<td>"+texto+"</td>"
-    return html_
-
-def escribir_estandares(divc):
-    estandars = divc.find_all('li')
-    estandares = ""
-    coma = False
-    for es in estandars:
-        if not coma:
-            coma=True 
-            estandares += es.text[17:24]
-        else:
-            estandares +=", "+es.text[17:24]
-
-    return estandares
-
-def get_content_of_link(url,browser,tipo):
-    array_respuesta= []
-    #Ojo no se tiene en cuenta de que pueda fallar (no hay try except finally) porque no se puede hacer el browser quit
-    if tipo =='AM' and url.startswith('https://accessmonitor.acessibilidade.gov.pt'):
-        #Uno de los links va a w3c
-        browser.get(url)
-        timeout_in_seconds = 50
-        WebDriverWait(browser, timeout_in_seconds).until(ec.presence_of_element_located((By.ID, 'list_tab')))
-        #Lo de abajo hace que se imprima la pagina
-        html = browser.page_source
-        res = soup(html, features="html.parser")
-
-        div = res.find('div',{'id':'list_tab'})
-
-        ol = div.ol
-
-        lis = ol.find_all('li')
-
-        for li in lis:
-            table = li.table 
-            trs = table.find_all('tr')
-            td = trs[1].td
-            codigo = td.code.text
-            array_respuesta.append(codigo)
-    else:
-        array_respuesta.append(url)
-
-    return array_respuesta
 
 @app.route('/getJSON/', methods=['POST'])
 @cross_origin()
 def create_JSON():
+    """
+        Crea un JSON con los resultados de los análisis
+    """
     received_json = request.get_json()
     url = received_json['url']
     AM = received_json['AM']
     AC = received_json['AC']
-    print("U: "+url)
+    print("Url: "+url)
     print("AM: "+str(AM))
     print("AC: "+str(AC))
 
     informe_1 = {}
     informe_2 = {}
 
+    #Se realiza de manera concurrente
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex:
         if AM:
-            f1 = ex.submit(JSON_access_monitor, url)
+            f1 = ex.submit(accessmonitor, url)
         if AC:
             f2 = ex.submit(achecker, url)
         # Wait for results
@@ -133,7 +77,11 @@ def create_JSON():
     return informe_final
 
 
-def JSON_access_monitor(url):
+def accessmonitor(url):
+    """
+        Obtiene el JSON del análisis realizdo por AccessMonitor para
+        la url pasada por parámetro 
+    """
     #Vamos a sacar la web de access monitor
     url = url.replace("/",'%2f')
 
@@ -168,8 +116,6 @@ def JSON_access_monitor(url):
 
         rows = cabeza.find_all('tr')
 
-
-
         for row in rows:
             objeto_codigos_fallantes = {}
             cols = row.find_all('td')
@@ -177,7 +123,7 @@ def JSON_access_monitor(url):
             nivel = cols[2].text
             nivel = nivel.replace(' ','')
             if str(nivel) == 'A' or str(nivel) =='AA':
-                estandares = get_estandares_array(divc)
+                estandares = am_get_estandares_array(divc)
                 array_prueba = []
 
                 cols = row.find_all('td')
@@ -206,13 +152,20 @@ def JSON_access_monitor(url):
                 if tipo:
                     link = cols[3].a.get('href')
                     link = 'https://accessmonitor.acessibilidade.gov.pt'+link
-                    array_respuesta = get_content_of_link(link,browser,'AM')
+                    array_respuesta,array_locations = am_get_content_of_link(link,browser,'AM')
 
+
+                    pos = 0
                     for i in array_respuesta:
                         i=i.replace('\n','')
                         i=i.replace('\t','')
                         texto_link += "     "+i+"\n\n"
-                        afc_code.append(i)
+                        afc_code.append({
+                            'texto_codigo':i,
+                            'location':array_locations[pos]
+                            })
+                        pos = pos+1
+
 
                 texto_final += divc.p.text
                 afc_text = divc.p.text
@@ -234,7 +187,6 @@ def JSON_access_monitor(url):
                     "texto":afc_text,
                     "codigo": afc_code
                 }
-
 
 
                 for estandar in estandares:
@@ -278,7 +230,47 @@ def JSON_access_monitor(url):
     return informe
 
 
+def am_get_content_of_link(url,browser,tipo):
+    """
+        Dada la URL de un resultado de AccessMonitor, obtiene el código fallante así 
+        como la posiciñon en la que fallan y lo devuelve en dos arrays
+    """
+    array_respuesta= []
+    array_locations = []
+    #Ojo no se tiene en cuenta de que pueda fallar (no hay try except finally) porque no se puede hacer el browser quit
+    if tipo =='AM' and url.startswith('https://accessmonitor.acessibilidade.gov.pt'):
+        #Uno de los links va a w3c
+        browser.get(url)
+        timeout_in_seconds = 50
+        WebDriverWait(browser, timeout_in_seconds).until(ec.presence_of_element_located((By.ID, 'list_tab')))
+        #Lo de abajo hace que se imprima la pagina
+        html = browser.page_source
+        res = soup(html, features="html.parser")
+
+        div = res.find('div',{'id':'list_tab'})
+
+        ol = div.ol
+
+        lis = ol.find_all('li')
+
+        for li in lis:
+            table = li.table 
+            trs = table.find_all('tr')
+            td = trs[1].td
+            codigo = td.code.text
+            location = trs[3].td.span.text
+            array_respuesta.append(codigo)
+            array_locations.append(location)
+    else:
+        array_respuesta.append(url)
+
+    return array_respuesta, array_locations
+
+
 def nombres_por_codigos():
+    """
+        Obtiene un diccionario con los nombres WCAG para cada código de estándar
+    """
     cod = {
     '1.1.1':'WCAG21:non-text-content',
     '1.2.1':'WCAG21:audio-only-and-video-only-prerecorded',
@@ -334,7 +326,10 @@ def nombres_por_codigos():
     return cod
 
 
-def get_estandares_array(divc):
+def am_get_estandares_array(divc):
+    """
+        Obtiene un array con los estandares
+    """
     estandars = divc.find_all('li')
     estandares = []
     for es in estandars:
@@ -344,6 +339,9 @@ def get_estandares_array(divc):
 
 
 def achecker(url):
+    """
+        Devuelve un informe JSON con el análisis realizado por achecker para la url pasada por parámetro
+    """
     informe_casos = {}
     ac = "https://achecker.achecks.ca/checker/index.php"
     options = webdriver.ChromeOptions()
@@ -373,7 +371,7 @@ def achecker(url):
         boton_submit.click()
         html = browser.page_source
 
-        informe_casos = get_contenido_achecker(browser)
+        informe_casos = ac_get_contenido(browser)
 
 
     except TimeoutException:
@@ -384,7 +382,10 @@ def achecker(url):
         print("AC hecho")
         return informe
 
-def get_contenido_achecker(browser):
+def ac_get_contenido(browser):
+    """
+        Devuelve el un informe con errores, advertencias,... realizado por AChecker
+    """
     informe = {
         'Tester_Name' : 'Achecker'
     }
@@ -437,7 +438,9 @@ def get_contenido_achecker(browser):
                         "tipo": 'error',
                         "texto":problema,
                         "solucion":solucion,
-                        "codigo": [er['codigo']],
+                        "codigo": [{
+                        'texto_codigo': er['codigo']
+                        }],
                         'linea':er['linea']
                     })
 
@@ -451,7 +454,9 @@ def get_contenido_achecker(browser):
                         "tipo": 'Failed',
                         "texto":problema,
                         "solucion":solucion,
-                        "codigo": [er['codigo']],
+                        "codigo": [{
+                        'texto_codigo': er['codigo']
+                        }],
                         'linea':er['linea']
                     }]
                 }
@@ -503,7 +508,9 @@ def get_contenido_achecker(browser):
                         "web":"AChecker",
                         "tipo": 'Warning',
                         "texto":problema,
-                        "codigo": [er['codigo']],
+                        "codigo": [{
+                        'texto_codigo': er['codigo']
+                        }],
                         'linea':er['linea']
                     })
 
@@ -515,7 +522,9 @@ def get_contenido_achecker(browser):
                         "web":"AChecker",
                         "tipo": 'Warning',
                         "texto":problema,
-                        "codigo": [er['codigo']],
+                        "codigo": [{
+                        'texto_codigo': er['codigo']
+                        }],
                         'linea':er['linea']
                     }]
                 }
@@ -568,7 +577,9 @@ def get_contenido_achecker(browser):
                         "web":"AChecker",
                         "tipo": 'Potential Problem',
                         "texto":problema,
-                        "codigo": [er['codigo']],
+                        "codigo": [{
+                        'texto_codigo': er['codigo']
+                        }],
                         'linea':er['linea']
                     })
 
@@ -580,7 +591,9 @@ def get_contenido_achecker(browser):
                         "web":"AChecker",
                         "tipo": 'Potential Problem',
                         "texto":problema,
-                        "codigo": [er['codigo']],
+                        "codigo": [{
+                        'texto_codigo': er['codigo']
+                        }],
                         'linea':er['linea']
                     }]
                 }
@@ -593,6 +606,9 @@ def get_contenido_achecker(browser):
 
 
 def merge_reports(informe1, informe2):
+    """
+        Devuelve un informe fusionando los dos informes introducidos por parámetro
+    """
     if informe1 == {}:
         informe1 = informe2;
         informe2 = {}
@@ -622,6 +638,7 @@ def merge_reports(informe1, informe2):
             'Texto' : '*************'+autor1+'************* \n\n'+value['Texto']+'\n\n ************************** \n\n',
             'Codigos': value['Codigos']
         }
+
 
     if 'Cases' in informe2:
         #Ahora los del informe 2
@@ -658,6 +675,10 @@ def merge_reports(informe1, informe2):
     return informe_final
 
 def fomat_informe(url,informe):
+    """
+        Crea un informe con el formato de W3C con los datos obtenidos desde el informe de resultados 
+        pasado como parámetro.
+    """
     description = url
     pos = url.find('.')
     url = url[pos+1:]
@@ -712,6 +733,9 @@ def fomat_informe(url,informe):
 
 
 def crear_JSON_limpio():
+    """
+        Devuelve un JSON con formato de la web de W3C completamente limpio
+    """
     now = datetime.now()
     time = str(now.strftime("%a %b %d %Y"))
     json = {
