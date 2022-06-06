@@ -1,4 +1,9 @@
-
+/** 
+ * Update sirve para analizar los nuevos datos añadidos, hayan sido obtendiso de 
+ * forma automática o de forma manual, agregando un informe.
+ * 
+ * Con esos datos crea la tabla de resultados.
+ */
 function update(){
     var jsonT = localStorage.getItem("json");
     var json = JSON.parse(jsonT);
@@ -13,7 +18,6 @@ function update(){
     var c_not_present = 0;
     var c_not_checked = 0;
 
-
     var codigos = codigos_por_nombres();
 
     var obj;
@@ -24,7 +28,6 @@ function update(){
         obj = json.auditSample[i];
         estandar = obj.test.id;
         codigo_estandar = codigos[estandar];
-        //console.log('Codigo: '+codigo_estandar);
         res = obj.result.outcome.id;
         switch(res) {
             case "earl:failed":
@@ -49,14 +52,11 @@ function update(){
             'result' : res,
             "Codigos": obj.result.codigo_error 
         };
-
-
     }
 
     var len = Object.keys(json_resultados).length;
     console.log("Len; "+len);
     localStorage.setItem('json_resultados',JSON.stringify(json_resultados));
-
 
     var html_results = "<div style='text-align:center'><br>";
     html_results += "<table class='tabla_RES'><tr><th style='background-color:#C8FA8C !important;' title='Passed'>P</th>";
@@ -74,21 +74,6 @@ function update(){
     tabla_contenido += "<tr><th style='width:68% !important;font-size:12px !important;background-color:white !important'>Standard</th><th style='background-color:#C8FA8C' title='Passed'>P</th>";
     tabla_contenido += "<th style='background-color:#FA8C8C' title='Failed'>F</th><th style='background-color:#F5FA8C' title='Can&#39;t tell'>CT</th>";
     tabla_contenido += "<th title='Not Present' style='background-color:#FFFFFF !important;'>NP</th><th style='background-color:#8CFAFA' title='Not checked'>NC</th></tr></table>";
-    
-    /*
-    tabla_contenido += '<tr><td><a href="javascript:cambiar_tabla(\'1\')">1 Perceivable</a></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>';
-    tabla_contenido += '<tr><td><a href="javascript:cambiar_tabla(\'2\')">2 Operable</a></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>';
-    tabla_contenido += '<tr><td><a href="javascript:cambiar_tabla(\'3\')">3 Understandable</a></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>';
-    tabla_contenido += '<tr><td><a href="javascript:cambiar_tabla(\'4\')">4 Robust</a></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>';
-    
-    //tabla_contenido += '<tr><td><input class="boton_tabla" type="button" id="estandar_1" name="limpiar" value="1 Perceivable"></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>';
-    tabla_contenido += '<tr><td><a href="javascript:cambiar_tabla(\'1\')">1 Perceivableeeee</a></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>';
-    tabla_contenido += '<tr><td><input class="boton_tabla" type="button" id="estandar_2" name="limpiar" value="2 Operable"></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>';
-    tabla_contenido += '<tr><td><input class="boton_tabla" type="button" id="estandar_3" name="limpiar" value="3 Understandable"></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>';
-    tabla_contenido += '<tr><td><input class="boton_tabla" type="button" id="estandar_4" name="limpiar" value="4 Robust"></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>';
-    tabla_contenido += '<tr><td> <a href="#" onclick="return probando_js();">Link</a></td></tr>';
-    tabla_contenido += '<tr><td><a href="javascript:probando_js()">1 Perceivableeeee</a></td>'
-    tabla_contenido += "</table>";*/
 
     var sub_temas = sub_temasF('0');
     let st = "";
@@ -108,14 +93,14 @@ function update(){
         tabla_contenido += '</div>';
     }
 
-
-
     localStorage.setItem("tabla_main",tabla_contenido);
     document.getElementById('tabla_contenido').innerHTML=tabla_contenido;
-
-
 }
 
+
+/** 
+ * Sirve para poder traducir el código que nos llega desde el informe al estándar numérico
+ */
 function codigos_por_nombres(){
     cod = {
     'WCAG21:non-text-content': '1.1.1',
@@ -172,96 +157,9 @@ function codigos_por_nombres(){
     return cod
 }
 
-
-function cambiar_tabla(estandar){
-//function get_datos(estandar){
-    console.log('Enrra');
-    var json_resultados = localStorage.getItem('json_resultados');
-    json_resultados = JSON.parse(json_resultados);
-
-    //Primero sacamos los subtemas
-    //NO FUNCIONA DEL TODO, ME QUEDO AQUÍ, COMPROBAR CON LA CONSOLA
-    /*
-    var array_subtemas = [];
-    for (var k_st in json_resultados) {
-        if (k_st.startsWith(estandar)){
-            var len = estandar.length;
-            k_st = k_st.substring(len+1,);
-            var pospun = k_st.indexOf('.');
-            k_st = k_st.substring(0,pospun);
-            //console.log('A buscar'+k_st);
-            if(!array_subtemas.includes(k_st)){
-                array_subtemas.push(k_st);
-            }
-        }
-    }
-*/
-    //Sacamos los subtemas:
-    var sub_temas = sub_temasF(estandar);
-    if (Object.keys(sub_temas).length >0){
-        /*
-        var html = "<input class='boton_tabla' type='button' id='main_table' value='Main Table'>";
-        html += "<table class='tabla_contenido' style='width:100%'>";
-        html += "<tr><th>Standard</th><th style='background-color:#C8FA8C' title='Passed'>P</th>";
-        html += "<th style='background-color:#FA8C8C' title='Failed'>F</th><th style='background-color:#F5FA8C' title='Can&#39;t tell'>CT</th>";
-        html += "<th title='Not Present'>NP</th><th style='background-color:#8CFAFA' title='Not checked'>NC</th></tr>";
-        */
-        var c_passed = 0;
-        var c_failed = 0;
-        var c_cannot_tell = 0;
-        var c_not_present = 0;
-        var c_not_checked = 0;
-        var res = ""; 
-
-        for(var keyST in sub_temas){
-            console.log('entra bucle');
-            c_passed = 0;
-            c_failed = 0;
-            c_cannot_tell = 0;
-            c_not_present = 0;
-            c_not_checked = 0;
-            for (var key in json_resultados) {
-                if (key.startsWith(keyST)){
-                    res = json_resultados[key].result; 
-                    switch(res) {
-                        case "earl:failed":
-                            c_failed = c_failed+1;
-                            break;
-                        case "earl:untested":
-                            c_not_checked = c_not_checked+1;
-                            break;
-                        case "earl:cantTell":
-                            c_cannot_tell = c_cannot_tell+1;
-                            break;
-                        case "earl:passed":
-                            c_passed = c_passed+1;
-                            break;
-                        case "earl:inapplicable":
-                            c_not_present = c_not_present+1;
-                            break;
-                        default:
-                    }
-
-                }
-            }
-            /*
-            auxKey = keyST.replaceAll('.','_');
-            estandar_nombre = 'estandar_'+auxKey;
-            html += "<tr><td style='width: 30px;'><input class='boton_tabla' type='button' id='"+estandar_nombre+"' value='"+sub_temas[keyST]+"'></td>";
-            html += "<td>"+c_passed+"</td>"+"<td>"+c_failed+"</td><td>"+c_cannot_tell+"</td><td>"+c_not_present+"</td><td>"+c_not_checked+"</td></tr>"; 
-            */
-        }
-        //html += "</table>";
-        //document.getElementById('tabla_contenido').innerHTML=html;
-        //localStorage.setItem("tabla_secun",html);
-        //window.location.reload();
-        console.log('Va a salir');
-        return [c_passed, c_failed, c_cannot_tell, c_not_present, c_not_checked];
-
-        
-    }         
-}
-
+/**
+ * Dado un estandar o subestandar, devuelve los subsecciones de ese estandar o subestandar.
+ */
 function sub_temasF(estandar){
     var respuesta = {};
     switch(estandar){
@@ -411,6 +309,9 @@ function sub_temasF(estandar){
     return respuesta;
 }
 
+/**
+ * Imprime las subsecciones de la sección "s" en HTML y lo devuelve
+ */
 function print_subsections(s){
     var sub_temas = sub_temasF(s);
     let st = "";
@@ -437,6 +338,10 @@ function print_subsections(s){
     return codigo_nav_st;
 }
 
+/** 
+ * Dado un subsubestandar como parámetro, obtiene los resultados en materia de aciertos, fallos, advertencias, 
+ * no presentes y no checkeados para ese subsubestandar y lo devuelve en forma de array.
+ */
 function get_datos(keyST){
     var json_resultados = localStorage.getItem('json_resultados');
     json_resultados = JSON.parse(json_resultados);
@@ -467,14 +372,14 @@ function get_datos(keyST){
                     break;
                 default:
             }
-
         }
     }
-    console.log('Va a salir');
     return [c_passed, c_failed, c_cannot_tell, c_not_present, c_not_checked];
-
 }
 
+/**
+ * Imprime las subsubsecciones de la subseccion pasada como parámetro y lo devuelve como cadena de caracteres HTML
+ */
 function print_sub_subsubsections(estandar){
     var sub_temas = sub_temasF(estandar);
     let st = "";
@@ -539,11 +444,6 @@ function print_sub_subsubsections(estandar){
         }
         codigo_nav_st += '<td style="font-size:9px"><b>'+result_text+'</b></td>';
         codigo_nav_st += '</tr></table></button><div class="content_tabla">';
-        /*
-        sst = sub_temasF(keyST);
-        if (Object.keys(sst).length >0){
-            codigo_nav_st += print_subsections(keyST);
-        }*/
         
         if(len>0){
             codigo_nav_st += print_report_result(keyST);
@@ -552,9 +452,12 @@ function print_sub_subsubsections(estandar){
         codigo_nav_st+='</div>';
     }
     return codigo_nav_st;
-
 }
 
+/** 
+ * Dada una subsubsección como parámetro, imprime los resultados obtenidos en el análisis 
+ * y lo devuelve como cadena de caracteres HTML
+ */
 function print_report_result(keyST){
     var json_resultados = localStorage.getItem('json_resultados');
     json_resultados = JSON.parse(json_resultados);
@@ -588,23 +491,20 @@ function print_report_result(keyST){
             html += '<tr><td><u>Code</u>:</td></tr>';
             html += '<tr><td>';
             for (var j = 0; j < c_len; j++) {
-                codigot = codigo[j].replaceAll('<','&lt;');
+                codigot = codigo[j]['texto_codigo'].replaceAll('<','&lt;');
                 codigot = codigot.replaceAll('>','&gt;');
 
-                html += '<code class="codigo_analisis" style="cursor: pointer;">'+codigot+'</code><br><br>';
-            }
-            /*
-            codigo = codigo[i].replace('<','&lt;');
-            codigo = codigo.replace('>','&gt;');
+                let loc = ""; 
+                if('location' in codigo[j]){
+                    loc = 'alt="'+codigo[j]['location']+'"';
+                }
 
-            html += '<pre><code>'+codigo+'</code></pre><br>';*/
+                html += '<code class="codigo_analisis" style="cursor: pointer;"'+loc+'>'+codigot+'</code><br><br>';
+            }
             html += '</td></tr>';
         }
     }
     html += '</table>'; 
 
     return html;
-
-    //https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus
-
 }

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AC-CHECK",
-  "version": "0.1",
+  "version": "1.0",
 
   "description": "Una extension de accesibilidad",
 

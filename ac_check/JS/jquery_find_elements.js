@@ -1,7 +1,25 @@
 $(document).ready(function(){
 
+  /**
+  * Listener para el click sobre un código de los resultados
+  */
+  $(".codigo_analisis").click(function(){
+    let alt = $(this).attr('alt');
+    let pintado = false;
+    if (typeof alt !== 'undefined' && alt !== false) {
+      pintado = mark_by_location(alt);  
+    }
+    if(!pintado){
+      mark_result($(this).text());
+    }    
+  });
+
+  //Cada vez que entremos en una página web borramos el último elemento pintado 
   localStorage.removeItem('ultimo');
 
+  /**
+   * La función _x actúa como un selector de XPATH
+   * */
   function _x(STR_XPATH) {
     var xresult = document.evaluate(STR_XPATH, document, null, XPathResult.ANY_TYPE, null);
     var xnodes = [];
@@ -13,9 +31,9 @@ $(document).ready(function(){
     return xnodes;
   }
 
+  //Creamos algunas variables globales
   var src = "";
   var pos = -1;
-  //Primerotenemos que saber si viene de achecker
   var txt = "";
   var posCom = -1;
   var posPun = -1;
@@ -23,11 +41,13 @@ $(document).ready(function(){
   var text = "";
   var txt_for_class= "";
 
+  /**
+   *  Pasado por paramétro el código del elemento a buscar, lo busca y lo pinta
+   * */
   function mark_result(text_origin){
-      //var txt = '<img src="https://eoidonostiaheo.hezkuntza.net/image/layout_set_logo?img_id=5814476"/image/layout_set_logo?img_id=5814476">';
       src = "";
       pos = -1;
-      //Primerotenemos que saber si viene de achecker
+      //Primero tenemos que saber si viene de achecker
       txt = text_origin;
       text = text_origin;
       posCom = -1;
@@ -36,8 +56,8 @@ $(document).ready(function(){
 
       if(txt.includes('...')){
         mt_ac();        
-      //AccessMonitor
       }else {
+        //AccessMonitor
         mt_am(); 
     }
     if(!pintado){
@@ -46,26 +66,48 @@ $(document).ready(function(){
 
   }
 
+  /**
+   * Pone el último elemento pintado tal y cómo estaba antes de ser pintado
+   * */
   function actualizar_ultimo(src){
     let ultimo = localStorage.getItem('ultimo');
     if(ultimo!==null){
-      eti = ultimo.substring(2,ultimo.indexOf('['));
-      if($(_x(ultimo)).length === 1){
-        despintar_elemento(eti, $(_x(ultimo))[0]);
+      if(ultimo.startsWith("//")){
+        eti = ultimo.substring(2,ultimo.indexOf('['));
+        if($(_x(ultimo)).length === 1){
+          despintar_elemento(eti, $(_x(ultimo))[0]);
+        }else{
+          let arr_ult = $(_x(ultimo));
+          for(let cn = 0; cn< arr_ult.length;cn++){
+            despintar_elemento(eti, arr_ult[cn]);
+          }
+        }
       }else{
-        let arr_ult = $(_x(ultimo));
-        for(let cn = 0; cn< arr_ult.length;cn++){
-          despintar_elemento(eti, arr_ult[cn]);
+        let elemento = document.querySelector(ultimo);
+        if(elemento !==null){
+          //Significa que al pintar NO se le añadió un div
+          despintar_elemento(elemento.tagName.toLowerCase(),elemento);
+        }else{
+          //Significa que al pintar SI se le añadió un div
+          let lastInPa1 = ultimo.lastIndexOf('(');
+          let lastInPa2 = ultimo.lastIndexOf(')');
+          let num_pos = ultimo.substring(lastInPa1+1,lastInPa2);
+          let lastInH = ultimo.lastIndexOf(">");
+          let previo = ultimo.substring(0, lastInH);
+          let posterior = ultimo.substring(lastInH+1,lastInPa1);
+          let location = previo + '>div:nth-child('+num_pos+')>'+posterior+'(1)';
+          elemento = document.querySelector(location);
+          despintar_elemento(elemento.tagName.toLowerCase(),elemento);
         }
       }
-      //$(_x(ultimo))[0].setAttribute('style','border: 0px solid red;');
     }
       localStorage.setItem('ultimo',src);
-
   }
 
-
-  function despintar_elemento(eti2, elemento){
+  /** 
+   * Despinta el elemento que se le pasa por parámetro
+   * */
+  function despintar_elemento(eti2, elemento2){
     let padre_html;
     let padre;
     let abuelo;
@@ -75,29 +117,17 @@ $(document).ready(function(){
       case (eti2 === 'span' || eti2 === 'b'):
         padre_html = localStorage.getItem('elemento_padre');
         padre = $.parseHTML(padre_html);
-        abuelo = elemento.parentNode.parentNode;
+        abuelo = elemento2.parentNode.parentNode;
         bisabuelo = abuelo.parentNode;
         bisabuelo.replaceChild(padre[0], abuelo);
-        /*
-        padreArtificial = elemento.parentNode;
-        padreOrig = elemento.parentNode.parentNode;
-        padreOrig.appendChild(elemento);
-        padreOrig.removeChild(padreArtificial);
-        */
         break;
-      case (eti2 === 'img'  ||  eti === 'body' || eti === 'input' || eti2 === 'div' || eti2 === 'href'):
-        elemento.setAttribute('style','border: 0px solid red;');
+      case (eti2 === 'img'  ||  eti2 === 'body' || eti2 === 'input' || eti2 === 'div' || eti2 === 'href'):
+        elemento2.setAttribute('style','border: 0px solid red;');
         break;
       default:
-        /*
-        padreArtificial = elemento.parentNode;
-        padreOrig = elemento.parentNode.parentNode;
-        padreOrig.appendChild(elemento);
-        padreOrig.removeChild(padreArtificial);
-        */
         padre_html = localStorage.getItem('elemento_padre');
         padre = $.parseHTML(padre_html);
-        abuelo = elemento.parentNode.parentNode;
+        abuelo = elemento2.parentNode.parentNode;
         bisabuelo = abuelo.parentNode;
         bisabuelo.replaceChild(padre[0], abuelo);
         break;
@@ -106,6 +136,10 @@ $(document).ready(function(){
     
   }
 
+  /** 
+   * Comprueba si el código del elemento, que ha sido pasado por parámetro, es suficiente
+   * para identificar al elemento y poder pintarlo
+   */
   function comprobar_pintado(src){
     console.log("Intenta pintar elemento con XPATH: "+src); 
     let eti = src.substring(2,src.indexOf('['));
@@ -118,6 +152,7 @@ $(document).ready(function(){
       //vamos a probar si todos los elementos que encuentra son iguales:
       let arr = [];
       let cont = $(_x(src));
+
       for (let c = 0; c <cont.length; c++){
         currentValue = cont[c];
         if(!arr.includes(currentValue.outerHTML)){
@@ -133,12 +168,13 @@ $(document).ready(function(){
           pintar(eti, cont[c]);
         }
       }
-
-
-
     }
   }
 
+  /** 
+   * Dado un elemento, lo pinta añadiendole un borde rojo para resaltarlo en la web y hace que
+   * la vista de la página se posicione en ese elemento
+   */
   function pintar(eti,elemento){
     let ele;
     let padre;
@@ -153,7 +189,7 @@ $(document).ready(function(){
           html_o = padre.outerHTML;
           localStorage.setItem('elemento_padre',html_o);
           ele.appendChild(elemento);
-          padre.appendChild(ele);
+          padre.replaceChild(ele,elemento);
           ele.scrollIntoView(); 
         break;
       case (eti === 'img'  || eti === 'div' || eti === 'body' || eti === 'input' || eti === 'href'):
@@ -168,15 +204,15 @@ $(document).ready(function(){
         localStorage.setItem('elemento_padre',html_o);
         elem_clon = elemento.cloneNode(true);
         ele.appendChild(elem_clon);
-        //padre.appendChild(ele);
         padre.replaceChild(ele,elemento);
         ele.scrollIntoView();
         break;
-
     }
   }
 
-
+  /** 
+   * Mark text: Caso AChecker
+   */ 
   function mt_ac(){
      //Foto
     if(txt.includes(' src=') || txt.includes(' src =')){
@@ -198,13 +234,16 @@ $(document).ready(function(){
     }
   }
 
+  /** 
+   * Mark text: Caso AChecker 
+   * Caso tiene SRC 
+   */
   function mt_ac_src(){
     let eti = text.substring(1);
     let posEspa = eti.search(' ');
     let posCierEti = eti.indexOf('>');
     let posRelativaEtiqueta = eti.search(' src=');
     if(posRelativaEtiqueta === -1){
-      //Caso sería "src =" 
       posRelativaEtiqueta =eti.indexOf(' src =')+1;
     }
     if(posCierEti ===-1 || posEspa < posCierEti){
@@ -246,6 +285,10 @@ $(document).ready(function(){
     comprobar_pintado(src);
   }
 
+  /** 
+   * Mark text: Caso AChecker 
+   * Caso tiene HREF
+   */ 
   function mt_ac_href(){
     //Debería ser un hipervinculo (<a>) pero porseacaso sacamos la etiqueta
     
@@ -257,14 +300,7 @@ $(document).ready(function(){
     }else{
       eti = eti.substring(0,posCierEti); 
     }
-    
 
-    //eti = 'a';
-
-    //ESTE ETI SE CARGA PROGRAMA!!!
-    //La solucion seria la de abajo
-    //$x('//b[contains(.//*/@href, "https://eoidonostiaheo.hezkuntza.net/documents/5702472/6347984/DISTRIBUCIONAULASL-M.p")]')[0];
-    
     //PARA SACAR LA ETIQUETA COMPARAR CUAL VIENE ANTES SI ">" O " ", 
     //si viene antes el cierre es que el id y href son de un hijo suyo y no de este
     //asique usar el xpath de arriba
@@ -284,9 +320,9 @@ $(document).ready(function(){
     }
 
 
-    href = txt.substring(href_pos+1);
-    posCom = href.search(ele);
-    posPun = href.indexOf('...');
+    let href = txt.substring(href_pos+1);
+    let posCom = href.search(ele);
+    let posPun = href.indexOf('...');
     
     if(cierre_POS !== -1 && href_pos > cierre_POS){
       //Significa que el href es de algún hijo
@@ -306,58 +342,36 @@ $(document).ready(function(){
         src = '//'+eti+'[contains(@href, "'+href+'")';
       }
     }
-    /*
-    //Vamos a sacar ahora si es posible el contenido del texto de <a>
-    //Primero habrá que saber si ha entrado todo a
-    posCier = txt.indexOf(">");
-    if(posCier !== -1){
-      //Hay cierre
-      //Buscamos si ha entrado completo
-      texto_contenido = txt.substring(posCier+1);
-      posCA = texto_contenido.indexOf("</a>");
-      posPun = texto_contenido.indexOf("...");
-      if(posCA !== -1){
-        texto_contenido = texto_contenido.substring(0,posCA);
-        src= src+'and text()="'+texto_contenido+'"]';
-      }else{
-        texto_contenido = texto_contenido.substring(0,posPun);
-        src= src+'and contains(text(),"'+texto_contenido+'")]';
-      }
-    }else{
-      src = src+']';
-    }*/
+
     src = src+']';
-    /*
-    if($(_x(src)).length === 1){
-      pintado = true;
-      actualizar_ultimo(src);
-      $(_x(src))[0].setAttribute('style','border: 5px solid red;');
-      $(_x(src))[0].scrollIntoView();
-    }*/
+
     comprobar_pintado(src);
   }
 
+  /** 
+   * Mark text: Caso AChecker 
+   * Caso tiene ID
+   */ 
   function mt_ac_id(){
 
     let eti = text.substring(1);
     let posEspa = eti.search(' ');
-    posRelativaEtiqueta = eti.search(' id=');
+    let posRelativaEtiqueta = eti.search(' id=');
     if(posRelativaEtiqueta === -1){
-      //Caso sería "src =" 
       posRelativaEtiqueta = eti.search(' id =')+1;
     }
-    posRelativaClase = eti.search(' class=');
+    let posRelativaClase = eti.search(' class=');
     if(posRelativaClase === -1){
-      //Caso sería "src =" 
       posRelativaClase = eti.search(' class =')+1;
     }
-    posCierEti = eti.indexOf('>');
+    let posCierEti = eti.indexOf('>');
     if(posCierEti ===-1 || posEspa < posCierEti){
       eti = eti.substring(0,posEspa); 
     }else{
       eti = eti.substring(0,posCierEti); 
     }
 
+    let ubicacion_arbol;
     if(posCierEti ===-1 || posRelativaEtiqueta<posCierEti){
       ubicacion_arbol = "./";
     }else{
@@ -376,8 +390,8 @@ $(document).ready(function(){
       ele = txt.charAt(pos);
     }
     txt = txt.substring(pos+1);
-    posCom = txt.search(ele);
-    posPun = txt.indexOf('...');
+    let posCom = txt.search(ele);
+    let posPun = txt.indexOf('...');
     if(posCom!== -1 && posCom<posPun){
       //Hemos encontrado id
       //pintado = true;
@@ -388,18 +402,12 @@ $(document).ready(function(){
         src = src.substring(0,src.length-1);
         src = src + ' and '+ubicacion_arbol+'@id="'+txt2+'"]';
       }
-      //actualizar_ultimo(src);            
-      //$(_x(src))[0].setAttribute('style','border: 5px solid red;');
-      //$(_x(src))[0].scrollIntoView();
+      
       comprobar_pintado(src);
 
     }else{
       //No hemos encontrado id, pero probamos si a ver con un poco de suerte solo hay una etiqueta que contenga ese id
       txt2 = txt.substring(0,posPun-1);
-      //Sacamos la etiqueta de la que se trata
-      //let eti = text.substring(1);
-      //let posEspa = eti.search(' ');
-      //eti = eti.substring(0,posEspa);
       let clase_src = '';
       //Comprobamos si tiene una clase valida
       if(text.includes(' class=') || text.includes(' class =')){
@@ -430,28 +438,23 @@ $(document).ready(function(){
       let len = $(_x('//'+eti+'[contains('+ubicacion_arbol+'@id, "'+txt2+'")'+clase_src+']')).length;
       if (len === 1){
         //Solo hay un id que empiece así, nos vale
-        //pintado = true;
         src = '//'+eti+'[contains('+ubicacion_arbol+'@id, "'+txt2+'")'+clase_src+']';
-        //let id =  $(_x(src))[0].getAttribute('id');
-        /*
-        actualizar_ultimo('//*[@id="'+id+'"]');            
-        $(_x(src))[0].setAttribute('style','border: 5px solid red;');
-        $(_x(src))[0].scrollIntoView();
-        */
-        comprobar_pintado(src);
 
+        comprobar_pintado(src);
       }
-  
     }
   }
 
+  /** 
+   * Mark text: Caso AChecker 
+   * Caso tiene CLASS
+   */ 
   function mt_ac_class(){
     let eti = text.substring(1);
     let posEspa = eti.search(' ');
-    posCierEti = eti.indexOf('>');
-    posRelativaEtiqueta = eti.search(' class=');
+    let posCierEti = eti.indexOf('>');
+    let posRelativaEtiqueta = eti.search(' class=');
     if(posRelativaEtiqueta === -1){
-      //Caso sería "src =" 
       posRelativaEtiqueta = eti.search(' class =')+1;
     }
     if(posCierEti ===-1 || posEspa < posCierEti){
@@ -495,13 +498,6 @@ $(document).ready(function(){
         src = src.substring(0,src.length-1);
         src = src + ' and '+ubicacion_arbol+'@class="'+txt2+'"]';
       }
-      //if($(_x(src)).length === 1){
-        /*
-        pintado = true;
-        actualizar_ultimo(src);
-        $(_x(src))[0].setAttribute('style','border: 5px solid red;');
-        $(_x(src))[0].scrollIntoView();
-        */
       comprobar_pintado(src);
     }else{
       //Tenemos clase parcial
@@ -513,27 +509,19 @@ $(document).ready(function(){
         src = src + ' and contains('+ubicacion_arbol+'@class, "'+txt2+'")]';
       }
       comprobar_pintado(src);
-      /*
-      if($(_x(src)).length === 1){
-
-          pintado = true;
-          let class_entero =  $(_x(src))[0].getAttribute('class');
-          actualizar_ultimo('//'+eti+'[@class="'+class_entero+'"]');
-          $(_x(src))[0].setAttribute('style','border: 5px solid red;');
-          $(_x(src))[0].scrollIntoView();
-        }
-        */
     }
   }
   
-
+  /** 
+   * Mark text: Caso AChecker 
+   * Caso tiene NAME
+   */ 
   function mt_ac_name(){
     let eti = text.substring(1);
     let posEspa = eti.search(' ');
-    posCierEti = eti.indexOf('>');
-    posRelativaEtiqueta = eti.search(' name=');
+    let posCierEti = eti.indexOf('>');
+    let posRelativaEtiqueta = eti.search(' name=');
     if(posRelativaEtiqueta === -1){
-      //Caso sería "src =" 
       posRelativaEtiqueta = eti.search(' name =')+1;
     }
     if(posCierEti ===-1 || posEspa < posCierEti){
@@ -547,7 +535,6 @@ $(document).ready(function(){
     }else{
       ubicacion_arbol = ".//*/"; 
     }
-
 
     txt = txt_for_class;
     let pos = txt.search(' name=');
@@ -577,13 +564,6 @@ $(document).ready(function(){
         src = src.substring(0,src.length-1);
         src = src + ' and '+ubicacion_arbol+'@name="'+txt2+'"]';
       }
-      //if($(_x(src)).length === 1){
-        /*
-        pintado = true;
-        actualizar_ultimo(src);
-        $(_x(src))[0].setAttribute('style','border: 5px solid red;');
-        $(_x(src))[0].scrollIntoView();
-        */
       comprobar_pintado(src);
     }else{
       //Tenemos clase parcial
@@ -595,19 +575,13 @@ $(document).ready(function(){
         src = src + ' and contains('+ubicacion_arbol+'@name, "'+txt2+'")]';
       }
       comprobar_pintado(src);
-      /*
-      if($(_x(src)).length === 1){
-
-          pintado = true;
-          let class_entero =  $(_x(src))[0].getAttribute('class');
-          actualizar_ultimo('//'+eti+'[@class="'+class_entero+'"]');
-          $(_x(src))[0].setAttribute('style','border: 5px solid red;');
-          $(_x(src))[0].scrollIntoView();
-        }
-        */
     }
   }
 
+
+  /** 
+   * Mark text: Caso AccessMonitor 
+   */ 
   function mt_am(){
     if(txt.includes(' src=') || txt.includes(' src =')){
       mt_am_src();
@@ -632,6 +606,10 @@ $(document).ready(function(){
     }
   }
 
+  /** 
+   * Mark text: Caso AccessMonitor 
+   * Caso tiene SRC
+   */ 
   function mt_am_src(){
 
     let eti = text.substring(1);
@@ -657,7 +635,6 @@ $(document).ready(function(){
 
     let pos = text.search(' src=');
     if(pos === -1){
-      //Caso sería "src =" 
       pos = text.indexOf(' src =')+1;
     }
     let ele = text.charAt(pos+5);
@@ -674,18 +651,6 @@ $(document).ready(function(){
 
     src = '//'+eti+'['+ubicacion_arbol+'@src="'+txt2+'"]';
 
-    //A veces accessmonitor falla y saca src dobles, comprobamos si puede ser el caso
-    /*
-    let posJPG1 = text.indexOf('.jpg');
-    let posJPG2 = text.indexOf('.jpg',posJPG1+1);
-    let posCOM1 = text.indexOf('="',posJPG1);
-    let posPNG1 = text.indexOf('.png');
-    let posPNG2 = text.indexOf('.png',posPNG1+1);
-    let posCOM2 = text.indexOf('="',posPNG1);
-
-    //&&  $(_x(src)).length ===1 )
-    if((posJPG1 === -1 && posPNG1 === -1) ||(posJPG2!== -1 && posCOM1 !==-1 && posJPG2>posCOM1 ) || (posPNG2 !==-1 && posCOM2 !==-1  && posPNG2>posCOM2)){
-    */
     let possrc = text.indexOf(' src=');
     let pos1 = 0;
     let pos2 = 0;
@@ -713,8 +678,6 @@ $(document).ready(function(){
         pos = pos + 1;
         ele = text.charAt(pos);
       }
-
-
       let txt3 = text.substring(pos+1);
       pos = txt3.search(ele2);
       txt3= txt3.substring(pos+1);
@@ -724,36 +687,19 @@ $(document).ready(function(){
       console.log("SRC2: "+src);
       comprobar_pintado(src);
     }else{
-      /*
-      pos = text.search(' src=');
-      txt3 = text.substring(pos+5);
-      pos = txt3.search('"');
-      txt3= txt3.substring(pos+1);
-      pos = txt3.search('"');
-      txt3= txt3.substring(0,pos);
-      src = '//'+eti+'['+ubicacion_arbol+'@src="'+txt3+'"]';
-      console.log("SRC2: "+src);
-      */
       comprobar_pintado(src);
-
-        
-        /*
-        if($(_x(src)).length ===1 ){
-          pintado = true;
-          actualizar_ultimo(src);
-          $(_x(src))[0].setAttribute('style','border: 5px solid red;');
-          $(_x(src))[0].scrollIntoView();
-          console.log("Hecho2");
-        }
-        */
      }
   }
 
+  /** 
+   * Mark text: Caso AccessMonitor 
+   * Caso tiene HREF
+   */ 
   function mt_am_href(){
     let eti = text.substring(1);
     let posEspa = eti.search(' ');
-    posCierEti = eti.indexOf('>');
-    posRelativaEtiqueta = eti.indexOf(' href=');
+    let posCierEti = eti.indexOf('>');
+    let posRelativaEtiqueta = eti.indexOf(' href=');
     if(posRelativaEtiqueta === -1){
       posRelativaEtiqueta = eti.indexOf(' href =')+1;
     }
@@ -821,14 +767,7 @@ $(document).ready(function(){
         posCom = clase.indexOf(ele2);
         clase = clase.substring(0,posCom);
         src = src + ' and '+ubicacion_arbol2+'@class = "'+clase+'"]';
-        /*
-        if($(_x(src)).length === 1){
-          pintado = true;
-          actualizar_ultimo(src);
-          $(_x(src))[0].setAttribute('style','border: 5px solid red;');
-          $(_x(src))[0].scrollIntoView();
-        }
-        */
+
         comprobar_pintado(src);
       }
 
@@ -843,18 +782,14 @@ $(document).ready(function(){
         //src= src+'and text()="'+texto_contenido+'"]';
         src= src+' and contains(.//*/text(),"'+texto_contenido+'")]';
         comprobar_pintado(src);
-        /*
-        if($(_x(src)).length === 1){
-          pintado = true;
-          actualizar_ultimo(src);
-          $(_x(src))[0].setAttribute('style','border: 5px solid red;');
-          $(_x(src))[0].scrollIntoView();
-        }
-        */
       }
     }
   }
 
+  /** 
+   * Mark text: Caso AccessMonitor 
+   * Caso tiene ID
+   */ 
   function mt_am_id(){
     let eti = text.substring(1);
     let posEspa = eti.search(' ');
@@ -876,8 +811,6 @@ $(document).ready(function(){
       ubicacion_arbol = ".//*/"; 
     }
 
-
-
     pos = txt.search(' id=');
     if(pos === -1){
       pos = txt.indexOf(' id =')+1;
@@ -895,19 +828,19 @@ $(document).ready(function(){
     pintado = true;
     txt2 = txt2.substring(0,posCom);
     src = '//'+eti+'['+ubicacion_arbol+'@id="'+txt2+'"]';
-    /*
-    actualizar_ultimo(src);  
-    $(_x(src))[0].setAttribute('style','border: 5px solid red;');
-    $(_x(src))[0].scrollIntoView();
-    */
+
     comprobar_pintado(src);
   }
 
+  /** 
+   * Mark text: Caso AccessMonitor 
+   * Caso tiene CLASS
+   */ 
   function mt_am_class(){
     let eti = text.substring(1);
     let posEspa = eti.search(' ');
-    posCierEti = eti.indexOf('>');
-    posRelativaEtiqueta = eti.indexOf('class=');
+    let posCierEti = eti.indexOf('>');
+    let posRelativaEtiqueta = eti.indexOf('class=');
     if(posRelativaEtiqueta === -1){
       posRelativaEtiqueta = eti.indexOf(' class =')+1;
     }
@@ -924,7 +857,6 @@ $(document).ready(function(){
       ubicacion_arbol = ".//*/"; 
     }
 
-
     pos = txt.search(' class=');
     if(pos === -1){
       pos = txt.indexOf(' class =')+1;
@@ -940,7 +872,6 @@ $(document).ready(function(){
     txt2 = txt.substring(pos+1);
     posCom = txt2.search(ele);
 
-    
     //Hemos encontrado class
     txt2 = txt2.substring(0,posCom);
     if (src === ""){
@@ -949,22 +880,19 @@ $(document).ready(function(){
       src = src.substring(0,src.length-1);
       src = src + ' and '+ubicacion_arbol+'@class="'+txt2+'"]';
     }
-    /*
-    if($(_x(src)).length ===1){
-      pintado = true;
-      actualizar_ultimo(src); 
-      $(_x(src))[0].setAttribute('style','border: 5px solid red;');
-      $(_x(src))[0].scrollIntoView();
-    }
-    */
+    
     comprobar_pintado(src);
   }
 
+  /** 
+   * Mark text: Caso AccessMonitor 
+   * Caso tiene NAME
+   */ 
   function mt_am_name(){
     let eti = text.substring(1);
     let posEspa = eti.search(' ');
-    posCierEti = eti.indexOf('>');
-    posRelativaEtiqueta = eti.indexOf('name=');
+    let posCierEti = eti.indexOf('>');
+    let posRelativaEtiqueta = eti.indexOf('name=');
     if(posRelativaEtiqueta === -1){
       posRelativaEtiqueta = eti.indexOf(' name =')+1;
     }
@@ -996,7 +924,6 @@ $(document).ready(function(){
 
     txt2 = txt.substring(pos+1);
     posCom = txt2.search(ele);
-
     
     //Hemos encontrado class
     txt2 = txt2.substring(0,posCom);
@@ -1009,6 +936,10 @@ $(document).ready(function(){
     comprobar_pintado(src);
   }
 
+  /** 
+   * Mark text: Caso AccessMonitor 
+   * Comprobamos si tiene nodos hijo que podamos usar para localizar el elemento
+   */ 
   function mt_am_nodos_hijo(){
     //Primero habrá que comprobar si el src no está vacio
     if (src === ""){
@@ -1049,16 +980,6 @@ $(document).ready(function(){
       let eti2 ="";
       if(espa !== -1 && espa<cier){
         eti2 = nuevoElem.substring(0,espa); 
-        /*
-        //No puedo haber ni class ni id porque sino lo hubiera encontrado el anterior
-        if(nuevoElem.includes('id')){
-          pos = nuevoElem.search('id');
-          nuevoid = nuevoElem.substring(pos+4);
-          posCom = nuevoid.search('"');
-          nuevoid = nuevoid.substring(0,posCom);
-
-        }
-        */
       }else{
         eti2 = nuevoElem.substring(0,cier);
       }
@@ -1077,17 +998,7 @@ $(document).ready(function(){
         //Lo añadimos al src y probamos de nuevo
         src = src+'[contains(text(),"'+texto_dentro+'")]]';
         comprobar_pintado(src);
-        /*
-        if($(_x(src)).length ===1){
-          //Encontrado
-          pintado = true;
-          actualizar_ultimo(src);  
-          $(_x(src))[0].setAttribute('style','border: 5px solid red;');
-          $(_x(src))[0].scrollIntoView();
-        }
-        */
       }
-
 
     }else{
       //Sabemos que no tiene hijos, probamos si tiene texto
@@ -1099,215 +1010,42 @@ $(document).ready(function(){
         src = src+' and ./text()="'+mensaje+'"]';
       }
       comprobar_pintado(src);
-
-
     }
-    
   }
 
-  /*
-  $.getScript( "http://127.0.0.1:5000/tablas.js", function( data, textStatus, jqxhr ) {
-    console.log( data ); // Data returned
-    console.log( textStatus ); // Success
-    console.log( jqxhr.status ); // 200
-    console.log( "Load was performed." );
-  });
-  */
-
-  $(document).on('change', '#file-upload-button', function(event) {
-    var reader = new FileReader();
-    //alert("Entra");
-    
-    reader.onload = function(event) {
-      var jsonT = localStorage.getItem("json");
-      var json = JSON.parse(jsonT);
-      var jsonObj = JSON.parse(event.target.result);
-      
-      if (json == null){
-        //Caso esta vacio, se pone el que acaba de entrar
-        localStorage.setItem("json",JSON.stringify(jsonObj));
-        update();
+  /** 
+   * Pintamos el elemento usando su posición absoluta
+   */
+  function mark_by_location(alt){
+    //Primero checkeamos si tenemos la location:
+    //Hay que sustituir lo que va antes del segundo ">" porque al crear la barra lateral movemos los elementos
+    let pos_desp_html = alt.indexOf(">",6);
+    alt = "html > body:nth-child(2)>div:nth-child(1)"+alt.substring(pos_desp_html);
+    let elemento = document.querySelector(alt);
+    console.log("Prueba location: "+alt);
+    if(elemento ===null){
+      //Probamos si es el elemento que esta pintado justo ahora
+      let lastInPa1 = alt.lastIndexOf('(');
+      let lastInPa2 = alt.lastIndexOf(')');
+      let num_pos = alt.substring(lastInPa1+1,lastInPa2);
+      let lastInH = alt.lastIndexOf(">");
+      let previo = alt.substring(0, lastInH);
+      let posterior = alt.substring(lastInH+1,lastInPa1);
+      let location = previo + '>div:nth-child('+num_pos+')>'+posterior+'(1)';
+      elemento = document.querySelector(location);
+      if(elemento === null){
+        return false;
       }else{
-        //Caso no vacio, se hace merge con el que estaba antes
-        merge(json,jsonObj);
-        localStorage.setItem("json",JSON.stringify(json));
-        update();
+        actualizar_ultimo(alt);
+        elemento = document.querySelector(alt);
+        pintar(elemento.tagName.toLowerCase(),elemento);
+        return true;
       }
-      alert("JSON successfully loaded!");
-      window.location.reload();
-    }
-  
-    reader.readAsText(event.target.files[0]);
-
-  });
-
-
-  $("#limpiar").click(function(){
-      localStorage.removeItem('json');
-      localStorage.removeItem('json_resultados');
-      localStorage.removeItem("tabla_resultados");
-      localStorage.removeItem("tabla_main");
-      localStorage.removeItem("ultimo");
-      
-      alert("Data successfully deleted");
-      var origin = window.location.origin; 
-      if(origin !=="https://www.w3.org"){
-        window.location.reload();
-      }
-  });
-
-  $(".codigo_analisis").click(function(){
-    mark_result($(this).text());
-  });
-
-
-  $(".collapsible_tabla").click(function(){
-    this.classList.toggle("active");
-    var content = this.nextElementSibling;
-    if (content.style.display === "block") {
-      content.style.display = "none";
-    } else {
-      content.style.display = "block";
-    }
-  });
-
-  $(".collapsible_tabla2").click(function(){
-    this.classList.toggle("active");
-    var content = this.nextElementSibling;
-    if (content.style.display === "block") {
-      content.style.display = "none";
-    } else {
-      content.style.display = "block";
-    }
-  });
-
-  $(".collapsible_tabla3").click(function(){
-    //this.classList.toggle("active");
-    let foto_ele = $(this).find('img')[0];
-    let actual_src = foto_ele.getAttribute('src');
-    if(actual_src === "http://127.0.0.1:5000/flecha.png"){
-      foto_ele.setAttribute('src',"http://127.0.0.1:5000/flecha_arriba.png");
     }else{
-      foto_ele.setAttribute('src',"http://127.0.0.1:5000/flecha.png");
+      actualizar_ultimo(alt);
+      elemento = document.querySelector(alt);
+      pintar(elemento.tagName.toLowerCase(),elemento);
+      return true;
     }
-    var content = this.nextElementSibling;
-    if (content.style.display === "block") {
-      content.style.display = "none";
-    } else {
-      content.style.display = "block";
-    }
-  });
-
-  $("#main_table").click(function(){
-      var mt = localStorage.getItem('tabla_main');
-      localStorage.setItem("tabla_secun",mt); 
-      var origin = window.location.origin; 
-      if(origin !=="https://www.w3.org"){
-        window.location.reload();
-      }
-  });
-
-  /*
-  var json= localStorage.getItem('json_resultados');
-  if(json !== null){
-    //document.getElementById("estandar_1").addEventListener ("click", probando, false);
   }
-
-
-  //Usamos wildcard
-  $("[id^=estandar_]").click(function(){
-    var id = $(this).attr('id');
-    id = id.substring(9,);
-    id = id.replace('_','.');
-    console.log('Id: '+id);
-    cambiar_tabla(id);
-      /*
-      var json_resultados = localStorage.getItem('json_resultados');
-      var html_ = "<table class='tabla_contenido' style='width:100%'>";
-      html_ += "<tr><th>Standard</th><th>P</th><th>F</th><th>CT</th><th>NP</th><th>NC</th></tr>";
-      for (const key in json_resultados) {
-          if (key.startsWith("1")){
-              html_ += "<tr><td><a href='javascript:cambiar_tabla('"+key+"')'>"+key+"</a></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>";
-          }
-      }
-      html_ += "</table>";
-
-      document.getElementById('tabla_contenido').innerHTML=html_;
-      console.log(html_);
-      console.log('Hehco');
-      *
-  });
-  */
-
-  $("#auto").click(function(){
-      localStorage.removeItem('json');
-      var req = new XMLHttpRequest();
-      var url = 'http://127.0.0.1:5000/getJSON/';
-      //req.overrideMimeType("application/json");
-      req.responseType = 'json';
-      var url_local = window.location.href;
-      //var nombre = "json_"+url_local;
-
-      req.open('POST', url, true);
-      req.onload  = function() {
-        var jsonResponse = req.response;
-        localStorage.setItem("json",JSON.stringify(jsonResponse));
-        alert("Data successfully saved");
-        console.log('update');
-        update();
-        //Crep que hace el update aun asi porque al cargar la tabla aparece
-        //var title = jsonResponse.defineScope.scope.title;
-        //Probar poniendo que ponga el JSON imprimido en el parrafo
-        //document.getElementById('para').innerHTML='<pre><code>'+JSON.stringify(jsonResponse)+'</code></pre>';
-        //download(title+".json", JSON.stringify(jsonResponse));
-
-        var origin = window.location.origin; 
-        if(origin !=="https://www.w3.org"){
-          window.location.reload();
-        }  
-      };
-      req.setRequestHeader('Content-Type', 'application/json');
-      
-      req.send(JSON.stringify({
-          'url': url_local,
-          'AM': $('#AM_checkbox').is(":checked"),
-          'AC': $('#AC_checkbox').is(":checked")
-
-      }));
-      
-
-      document.getElementById('tabla_res').innerHTML='<div class="loader_s"></div>';
-
-  });
-
-  $("#download").click(function(e){
-    console.log('Id: '+$(this).attr('id'));
-    
-      
-      var jsonT = localStorage.getItem("json");
-      var json = JSON.parse(jsonT);
-
-      var title = json.defineScope.scope.title;
-      download(title+".json", JSON.stringify(json));
-      var origin = window.location.origin; 
-      console.log("Or"+origin);
-      
-      if(String(origin) !=="https://www.w3.org"){
-        window.location.href = "https://www.w3.org/WAI/eval/report-tool/";
-      }
-
-  
-});
-
-
-$(".sn_label_paginas").click(function(){
-    let url =$(this).attr('id');
-    url = url.substring(0,2);
-    if(url === "AM"){
-       window.open("https://accessmonitor.acessibilidade.gov.pt/", '_blank').focus();
-    }
-    if(url === "AC"){
-       window.open("https://achecker.achecks.ca/checker/index.php", '_blank').focus();
-    }
-  });
 });
