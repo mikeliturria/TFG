@@ -1,6 +1,6 @@
 $(document).ready(function(){
   /** 
-   * Listener para cuando se suba un documento
+   * Listener for when a document is uploaded
    */
   $(document).on('change', '#file-upload-button', function(event) {
     var reader = new FileReader();
@@ -11,11 +11,11 @@ $(document).ready(function(){
       var jsonObj = JSON.parse(event.target.result);
       
       if (json == null){
-        //Caso esta vacio, se pone el que acaba de entrar
+        //Case is empty, the one who has just entered gets in.
         localStorage.setItem("json",JSON.stringify(jsonObj));
         update();
       }else{
-        //Caso no vacio, se hace merge con el que estaba antes
+        //Case not empty, merge with the previous one
         merge(json,jsonObj);
         localStorage.setItem("json",JSON.stringify(json));
         update();
@@ -28,7 +28,7 @@ $(document).ready(function(){
   });
 
   /**
-   * Listener para el click del botón de limpiar los datos
+   * Listener for the clear data button click
    */
   $("#limpiar").click(function(){
       localStorage.removeItem('json');
@@ -46,7 +46,7 @@ $(document).ready(function(){
 
 
   /**
-   * Listener para el click sobre un elemento de los resultados
+   * Listener for clicking on an element of the results
    */
   $(".collapsible_tabla").click(function(){
     this.classList.toggle("active");
@@ -59,7 +59,7 @@ $(document).ready(function(){
   });
 
   /**
-   * Listener para el click sobre un subelemento de los resultados
+   * Listener for clicking on a sub-element of the results
    */
   $(".collapsible_tabla2").click(function(){
     this.classList.toggle("active");
@@ -72,7 +72,7 @@ $(document).ready(function(){
   });
 
   /**
-   * Listener para el click sobre un subsubelemento de los resultados
+   * Listener for clicking on a sub-sub-element of the results
    */
   $(".collapsible_tabla3").click(function(){
     let foto_ele = $(this).find('img')[0];
@@ -91,16 +91,14 @@ $(document).ready(function(){
   });
 
   /**
-   * Listener para el click sobre el botón de obtener datos de manera automática
+   * Listener for the click on the button to get data automatically
    */
   $("#auto").click(function(){
       localStorage.removeItem('json');
       var req = new XMLHttpRequest();
       var url = 'http://127.0.0.1:5000/getJSON/';
-      //req.overrideMimeType("application/json");
       req.responseType = 'json';
       var url_local = window.location.href;
-      //var nombre = "json_"+url_local;
 
       req.open('POST', url, true);
       req.onload  = function() {
@@ -122,8 +120,9 @@ $(document).ready(function(){
       }));
       document.getElementById('tabla_res').innerHTML='<div class="loader_s"></div>';
   });
+
   /**
-   * Listener para el click sobre el botón de descargar informe
+   * Listener for the click on the download button report
    */
   $("#download").click(function(e){
     console.log('Id: '+$(this).attr('id'));
@@ -141,8 +140,8 @@ $(document).ready(function(){
   });
 
   /**
-   * Listener para el click sobre los links de los analizadores de accesibilidad
-   */
+   * Listener for clicking on the links of the accessibility analyzers
+     */
   $(".sn_label_paginas").click(function(){
       let url =$(this).attr('id');
       url = url.substring(0,2);

@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
   /**
-  * Listener para el click sobre un código de los resultados
+  * Listener for clicking on a code from the results
   */
   $(".codigo_analisis").click(function(){
     let alt = $(this).attr('alt');
@@ -14,11 +14,11 @@ $(document).ready(function(){
     }    
   });
 
-  //Cada vez que entremos en una página web borramos el último elemento pintado 
+  //Each time we enter a web page we delete the last painted element. 
   localStorage.removeItem('ultimo');
 
   /**
-   * La función _x actúa como un selector de XPATH
+   * The _x function acts as an XPATH selector.
    * */
   function _x(STR_XPATH) {
     var xresult = document.evaluate(STR_XPATH, document, null, XPathResult.ANY_TYPE, null);
@@ -31,7 +31,7 @@ $(document).ready(function(){
     return xnodes;
   }
 
-  //Creamos algunas variables globales
+  //We create some global variables
   var src = "";
   var pos = -1;
   var txt = "";
@@ -42,12 +42,12 @@ $(document).ready(function(){
   var txt_for_class= "";
 
   /**
-   *  Pasado por paramétro el código del elemento a buscar, lo busca y lo pinta
+   * Takes the code of the element to search given by parameter, searches it and paints it.
    * */
   function mark_result(text_origin){
       src = "";
       pos = -1;
-      //Primero tenemos que saber si viene de achecker
+      //First we need to know if it comes from achecker
       txt = text_origin;
       text = text_origin;
       posCom = -1;
@@ -67,7 +67,7 @@ $(document).ready(function(){
   }
 
   /**
-   * Pone el último elemento pintado tal y cómo estaba antes de ser pintado
+   * Put the last painted element back to how it was before it was painted.
    * */
   function actualizar_ultimo(src){
     let ultimo = localStorage.getItem('ultimo');
@@ -85,10 +85,10 @@ $(document).ready(function(){
       }else{
         let elemento = document.querySelector(ultimo);
         if(elemento !==null){
-          //Significa que al pintar NO se le añadió un div
+          // Means that a div was NOT added when painting.
           despintar_elemento(elemento.tagName.toLowerCase(),elemento);
         }else{
-          //Significa que al pintar SI se le añadió un div
+          // Means that a div WAS added when painting.
           let lastInPa1 = ultimo.lastIndexOf('(');
           let lastInPa2 = ultimo.lastIndexOf(')');
           let num_pos = ultimo.substring(lastInPa1+1,lastInPa2);
@@ -105,7 +105,7 @@ $(document).ready(function(){
   }
 
   /** 
-   * Despinta el elemento que se le pasa por parámetro
+   * The element passed as a parameter is unpainted.
    * */
   function despintar_elemento(eti2, elemento2){
     let padre_html;
@@ -137,8 +137,8 @@ $(document).ready(function(){
   }
 
   /** 
-   * Comprueba si el código del elemento, que ha sido pasado por parámetro, es suficiente
-   * para identificar al elemento y poder pintarlo
+   * Checks if the code of the element, which has been passed as a parameter, is enough to identify the element
+   * and to be able to paint it.
    */
   function comprobar_pintado(src){
     console.log("Intenta pintar elemento con XPATH: "+src); 
@@ -149,7 +149,7 @@ $(document).ready(function(){
       actualizar_ultimo(src);
       pintar(eti,$(_x(src))[0]);
     }else{
-      //vamos a probar si todos los elementos que encuentra son iguales:
+      //Let's test if all the elements it finds are the same:
       let arr = [];
       let cont = $(_x(src));
 
@@ -163,7 +163,7 @@ $(document).ready(function(){
       if (arr.length === 1){
         pintado = true;
         actualizar_ultimo(src);
-        //Son todos iguales, con lo que todos tendrán el mismo error
+        //They are all the same, so they will all have the same error.
         for (c = 0; c <cont.length; c++){
           pintar(eti, cont[c]);
         }
@@ -172,8 +172,8 @@ $(document).ready(function(){
   }
 
   /** 
-   * Dado un elemento, lo pinta añadiendole un borde rojo para resaltarlo en la web y hace que
-   * la vista de la página se posicione en ese elemento
+   * Given an element, it paints it by adding a red border to highlight it on the web and moves the
+   * page view to the position of the element
    */
   function pintar(eti,elemento){
     let ele;
@@ -211,7 +211,7 @@ $(document).ready(function(){
   }
 
   /** 
-   * Mark text: Caso AChecker
+   * Mark text: Case AChecker
    */ 
   function mt_ac(){
      //Foto
@@ -220,12 +220,12 @@ $(document).ready(function(){
     }else if(txt.includes(' href=') || txt.includes(' href =')){
       mt_ac_href();
     }  //
-    //Primero probamos id
+    //First we test id
     txt_for_class = txt;
     if(!pintado && txt.includes(' id=') || txt.includes(' id =')){
       mt_ac_id();
     }
-    //Probamos con la clase, solo si no se ha encontrado ya
+    //We try with the class, only if has not been already found
     if(!pintado && (txt_for_class.includes(' class=') || txt_for_class.includes(' class ='))){
       mt_ac_class();
     }
@@ -235,8 +235,8 @@ $(document).ready(function(){
   }
 
   /** 
-   * Mark text: Caso AChecker 
-   * Caso tiene SRC 
+   * Mark text: Case AChecker 
+   * Case it has SRC 
    */
   function mt_ac_src(){
     let eti = text.substring(1);
@@ -286,12 +286,10 @@ $(document).ready(function(){
   }
 
   /** 
-   * Mark text: Caso AChecker 
-   * Caso tiene HREF
+   * Mark text: Case AChecker 
+   * Case it has HREF
    */ 
   function mt_ac_href(){
-    //Debería ser un hipervinculo (<a>) pero porseacaso sacamos la etiqueta
-    
     let eti = text.substring(1);
     let posEspa = eti.search(' ');
     posCierEti = eti.indexOf('>');
@@ -301,11 +299,6 @@ $(document).ready(function(){
       eti = eti.substring(0,posCierEti); 
     }
 
-    //PARA SACAR LA ETIQUETA COMPARAR CUAL VIENE ANTES SI ">" O " ", 
-    //si viene antes el cierre es que el id y href son de un hijo suyo y no de este
-    //asique usar el xpath de arriba
-
-    //Sacamos el href
     let href_pos = txt.indexOf(' href=');
     if(href_pos === -1){
       href_pos =txt.indexOf(' href =')+1;
@@ -325,7 +318,7 @@ $(document).ready(function(){
     let posPun = href.indexOf('...');
     
     if(cierre_POS !== -1 && href_pos > cierre_POS){
-      //Significa que el href es de algún hijo
+      //Means that the href is from some child node
       if(posCom!==-1 && posCom<posPun){
         href = href.substring(0,posCom);  
         src = '//'+eti+'[.//*/@href="'+href+'"';          
@@ -349,8 +342,8 @@ $(document).ready(function(){
   }
 
   /** 
-   * Mark text: Caso AChecker 
-   * Caso tiene ID
+   * Mark text: Case AChecker 
+   * Case tiene ID
    */ 
   function mt_ac_id(){
 
@@ -380,7 +373,6 @@ $(document).ready(function(){
 
     pos = txt.search(' id=');
     if(pos === -1){
-      //Caso sería "src =" 
       pos = txt.search(' id =')+1;
     }
     let ele = txt.charAt(pos+4);
@@ -393,8 +385,7 @@ $(document).ready(function(){
     let posCom = txt.search(ele);
     let posPun = txt.indexOf('...');
     if(posCom!== -1 && posCom<posPun){
-      //Hemos encontrado id
-      //pintado = true;
+      //We have found an id
       txt2 = txt.substring(0,posCom);
       if (src === ""){
         src = '//'+eti+'['+ubicacion_arbol+'@id="'+txt2+'"]';
@@ -406,14 +397,13 @@ $(document).ready(function(){
       comprobar_pintado(src);
 
     }else{
-      //No hemos encontrado id, pero probamos si a ver con un poco de suerte solo hay una etiqueta que contenga ese id
+      //We haven't found any id, but let's try if we're lucky and there's only one tag containing that id
       txt2 = txt.substring(0,posPun-1);
       let clase_src = '';
       //Comprobamos si tiene una clase valida
       if(text.includes(' class=') || text.includes(' class =')){
         let posCla = text.search(' class=');
         if(posCla === -1){
-          //Caso sería "src =" 
           posCla = text.search(' class =')+1;
         }
         let ele = text.charAt(posCla+7);
@@ -437,7 +427,7 @@ $(document).ready(function(){
       }
       let len = $(_x('//'+eti+'[contains('+ubicacion_arbol+'@id, "'+txt2+'")'+clase_src+']')).length;
       if (len === 1){
-        //Solo hay un id que empiece así, nos vale
+        //There is just one id that starts like this, it works for us.
         src = '//'+eti+'[contains('+ubicacion_arbol+'@id, "'+txt2+'")'+clase_src+']';
 
         comprobar_pintado(src);
@@ -446,8 +436,8 @@ $(document).ready(function(){
   }
 
   /** 
-   * Mark text: Caso AChecker 
-   * Caso tiene CLASS
+   * Mark text: Case AChecker 
+   * Case it has CLASS
    */ 
   function mt_ac_class(){
     let eti = text.substring(1);
@@ -490,7 +480,7 @@ $(document).ready(function(){
     let posPun = txt2.indexOf('...');
     
     if(posCom!== -1 && posCom<posPun){
-      //Hemos encontrado class
+      //We have found a class
       txt2 = txt2.substring(0,posCom);
       if (src === ""){
         src = '//'+eti+'['+ubicacion_arbol+'@class="'+txt2+'"]';
@@ -500,7 +490,7 @@ $(document).ready(function(){
       }
       comprobar_pintado(src);
     }else{
-      //Tenemos clase parcial
+      //We have a partial class
       txt2 = txt2.substring(0,posPun-1);
       if (src === ""){
         src = '//'+eti+'[contains('+ubicacion_arbol+'@class, "'+txt2+'")]';
@@ -513,8 +503,8 @@ $(document).ready(function(){
   }
   
   /** 
-   * Mark text: Caso AChecker 
-   * Caso tiene NAME
+   * Mark text: Case AChecker 
+   * Case it has NAME
    */ 
   function mt_ac_name(){
     let eti = text.substring(1);
@@ -580,13 +570,12 @@ $(document).ready(function(){
 
 
   /** 
-   * Mark text: Caso AccessMonitor 
+   * Mark text: Case AccessMonitor 
    */ 
   function mt_am(){
     if(txt.includes(' src=') || txt.includes(' src =')){
       mt_am_src();
 
-      //OJO! PARA https://eoidonostiaheo.hezkuntza.net/documents/5702472/5772458/ikasgunea.jpg/68231b11-6b6f-85ff-381e-0bb7bf62c29e?t=1603723910526 NO funciona
     }else if(!txt.includes(' id=') && (txt.includes(' href=') || txt.includes(' href ='))){
       mt_am_href();
     }
@@ -600,15 +589,15 @@ $(document).ready(function(){
       mt_am_name();
     }
 
-    //Vemos si todavía no ha sido pintado, si no lo ha sido probamos a ver si tiene nodos hijos puede encontrar
+    //We see if it has not been painted yet, if it has not been painted we try to see if it has child nodes we can find.
     if(!pintado){
       mt_am_nodos_hijo();
     }
   }
 
   /** 
-   * Mark text: Caso AccessMonitor 
-   * Caso tiene SRC
+   * Mark text: Case AccessMonitor 
+   * Case it has SRC
    */ 
   function mt_am_src(){
 
@@ -617,7 +606,6 @@ $(document).ready(function(){
     let posCierEti = eti.indexOf('>');
     let posRelativaEtiqueta = eti.indexOf(' src=');
     if(posRelativaEtiqueta === -1){
-      //Caso sería "src =" 
       posRelativaEtiqueta = eti.indexOf(' src =')+1;
     }
 
@@ -692,8 +680,8 @@ $(document).ready(function(){
   }
 
   /** 
-   * Mark text: Caso AccessMonitor 
-   * Caso tiene HREF
+   * Mark text: Case AccessMonitor 
+   * Case it has HREF
    */ 
   function mt_am_href(){
     let eti = text.substring(1);
@@ -721,7 +709,6 @@ $(document).ready(function(){
       ubicacion_arbol = ".//*/"; 
     }
 
-    //Sacamos el href
     let href_pos = txt.indexOf(' href=');
     if(href_pos === -1){
       href_pos = txt.indexOf(' href =')+1;
@@ -739,11 +726,11 @@ $(document).ready(function(){
     href = href.substring(0,posCom);  
     src = '//'+eti+'['+ubicacion_arbol+'@href="'+href+'"';    
 
-    //Probamos si basta con el href:
+    //Test whether the href is enough:
     if($(_x(src+']')).length === 1){
       comprobar_pintado(src+']');
     }else{
-      //Probamos si tiene algo mas que podamos usar para identificar (class)
+      //We test if it has anything else we can use to identify (class)
       if(txt.includes(' class=')){
 
         if(posRelativaEtiqueta2<posCierEti){
@@ -772,14 +759,13 @@ $(document).ready(function(){
       }
 
       if(!pintado){
-        //Vamos a sacar ahora el contenido del texto de <a>
+        //Let's now extract the text content from <a>.
         posCier = txt.indexOf(">",posRelativaEtiqueta);
         texto_contenido = txt.substring(posCier+1);
         posCA = texto_contenido.indexOf("</a>");
         texto_contenido = texto_contenido.substring(0,posCA);
-        //Normalizamos espacios
+        //We normalise spaces
         texto_contenido = texto_contenido.replace(/\s+/g, ' ')
-        //src= src+'and text()="'+texto_contenido+'"]';
         src= src+' and contains(.//*/text(),"'+texto_contenido+'")]';
         comprobar_pintado(src);
       }
@@ -787,8 +773,8 @@ $(document).ready(function(){
   }
 
   /** 
-   * Mark text: Caso AccessMonitor 
-   * Caso tiene ID
+   * Mark text: Case AccessMonitor 
+   * Case it has ID
    */ 
   function mt_am_id(){
     let eti = text.substring(1);
@@ -824,8 +810,7 @@ $(document).ready(function(){
     }
     txt2 = txt.substring(pos+1);
     posCom = txt2.search(ele);
-    //Hemos encontrado id
-    pintado = true;
+    //Case we have found an id
     txt2 = txt2.substring(0,posCom);
     src = '//'+eti+'['+ubicacion_arbol+'@id="'+txt2+'"]';
 
@@ -833,8 +818,8 @@ $(document).ready(function(){
   }
 
   /** 
-   * Mark text: Caso AccessMonitor 
-   * Caso tiene CLASS
+   * Mark text: Case AccessMonitor 
+   * Case it has CLASS
    */ 
   function mt_am_class(){
     let eti = text.substring(1);
@@ -872,7 +857,7 @@ $(document).ready(function(){
     txt2 = txt.substring(pos+1);
     posCom = txt2.search(ele);
 
-    //Hemos encontrado class
+    //We have found a class
     txt2 = txt2.substring(0,posCom);
     if (src === ""){
       src = '//'+eti+'['+ubicacion_arbol+'@class="'+txt2+'"]';
@@ -885,8 +870,8 @@ $(document).ready(function(){
   }
 
   /** 
-   * Mark text: Caso AccessMonitor 
-   * Caso tiene NAME
+   * Mark text: Case AccessMonitor 
+   * Case it has NAME
    */ 
   function mt_am_name(){
     let eti = text.substring(1);
@@ -925,7 +910,7 @@ $(document).ready(function(){
     txt2 = txt.substring(pos+1);
     posCom = txt2.search(ele);
     
-    //Hemos encontrado class
+    //We have found a class
     txt2 = txt2.substring(0,posCom);
     if (src === ""){
       src = '//'+eti+'['+ubicacion_arbol+'@name="'+txt2+'"]';
@@ -937,11 +922,11 @@ $(document).ready(function(){
   }
 
   /** 
-   * Mark text: Caso AccessMonitor 
-   * Comprobamos si tiene nodos hijo que podamos usar para localizar el elemento
+   * Mark text: Case AccessMonitor 
+   * We check if it has child nodes that we can use to locate the element.
    */ 
   function mt_am_nodos_hijo(){
-    //Primero habrá que comprobar si el src no está vacio
+    //First check if the src is not empty
     if (src === ""){
       let eti = text.substring(1);
       let posEspa = eti.search(' ');
@@ -968,25 +953,25 @@ $(document).ready(function(){
         src = src + './@'+atributo+'="'+contenido_atributo+'"]';
       }
     }
-    //Tenemos en src el último src que se probó, vamos a comprobar hijos
+    //We have in "src" the last src that was tested, let's check children
     let cierreElem = text.indexOf("</",1);
     let abrirElem = text.indexOf("<",1);
-    //Si la apertura va antes que el cierre es que hay un elemento dentro
+    //If the opening comes before the closing, there is an element inside the element.
     if(cierreElem !== -1 && abrirElem !== -1 && cierreElem !== abrirElem){
       let nuevoElem = text.substring(abrirElem+1);
       let cier = nuevoElem.indexOf('>');
       espa = nuevoElem.indexOf(' ');
-      //Lo que venga antes será la etiqueta
+      //Whatever comes first will be the label
       let eti2 ="";
       if(espa !== -1 && espa<cier){
         eti2 = nuevoElem.substring(0,espa); 
       }else{
         eti2 = nuevoElem.substring(0,cier);
       }
-      //Primero añadimos la etiqueta al src 
+      //First we add the tag to the src 
       src = src.substring(0,src.length-1);
       src = src+" and ./"+eti2;
-      //Vemos si tiene un hijo que tenga texto:
+      //We see if it has a child who has text:
       if($(_x(src+'/text()]')).length >0){
         let texto_dentro = "";
         ncier = nuevoElem.indexOf("</");
@@ -995,13 +980,13 @@ $(document).ready(function(){
         }else{
           texto_dentro = nuevoElem.substring(cier+1,ncier);
         }
-        //Lo añadimos al src y probamos de nuevo
+        //We add it to the src and try again.
         src = src+'[contains(text(),"'+texto_dentro+'")]]';
         comprobar_pintado(src);
       }
 
     }else{
-      //Sabemos que no tiene hijos, probamos si tiene texto
+      //We know it has no children, we test if it has any text
       posCier = text.indexOf(">");
       posAper = text.indexOf("<",1);
       if(posAper !== -1){
@@ -1014,17 +999,17 @@ $(document).ready(function(){
   }
 
   /** 
-   * Pintamos el elemento usando su posición absoluta
+   * We paint the element using its absolute position in the document
    */
   function mark_by_location(alt){
-    //Primero checkeamos si tenemos la location:
-    //Hay que sustituir lo que va antes del segundo ">" porque al crear la barra lateral movemos los elementos
+    //First we check if we have the location:
+    //We have to replace what goes before the second ">" because when we create the sidebar we move the elements.
     let pos_desp_html = alt.indexOf(">",6);
     alt = "html > body:nth-child(2)>div:nth-child(1)"+alt.substring(pos_desp_html);
     let elemento = document.querySelector(alt);
     console.log("Prueba location: "+alt);
     if(elemento ===null){
-      //Probamos si es el elemento que esta pintado justo ahora
+      //We check if it is the element that is painted right now.
       let lastInPa1 = alt.lastIndexOf('(');
       let lastInPa2 = alt.lastIndexOf(')');
       let num_pos = alt.substring(lastInPa1+1,lastInPa2);
