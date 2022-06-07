@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>app module &mdash; AC-Check 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> AC-Check
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">app module</a></li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">AC-Check</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>app module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/app.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-app">
+<span id="app-module"></span><h1>app module<a class="headerlink" href="#module-app" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="app.ac_get_contenido">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">ac_get_contenido</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">browser</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#ac_get_contenido"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.ac_get_contenido" title="Permalink to this definition"></a></dt>
+<dd><p>This method returns a report with the results (failures, warning,…) made by AChecker</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>browser</strong> (<em>ChromeWebDriver</em>) – The browser</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A JSON with the results of the report</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.accessmonitor">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">accessmonitor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#accessmonitor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.accessmonitor" title="Permalink to this definition"></a></dt>
+<dd><p>This method gets the JSON of the AccessMonitor analysis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>url</strong> (<em>String</em>) – URL of the webpage to be analyzed</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The JSON of the AccessMonitor analysis</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.achecker">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">achecker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#achecker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.achecker" title="Permalink to this definition"></a></dt>
+<dd><p>This method returns a JSON report with the analysis made by AChecker for the URL given by parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>url</strong> (<em>String</em>) – URL of the page being analyzed</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A JSON report with the analysis made by AChecker</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.am_get_content_of_link">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">am_get_content_of_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">browser</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#am_get_content_of_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.am_get_content_of_link" title="Permalink to this definition"></a></dt>
+<dd><p>Given an URL, this method returns the code which causes the error and the location of that error in the document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<em>String</em>) – The URL to be analyzed</p></li>
+<li><p><strong>browser</strong> (<em>ChromeWebDriver</em>) – The browser</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Two arrays: One with the codes and another with the locations in the file</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Array of String</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.am_get_estandares_array">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">am_get_estandares_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">divc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#am_get_estandares_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.am_get_estandares_array" title="Permalink to this definition"></a></dt>
+<dd><p>This method returns an array with the standards of the given DIV WebElement</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>divc</strong> (<em>WebElement</em>) – DIV WebElement</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array with the standards of the given DIV</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.crear_JSON_limpio">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">crear_JSON_limpio</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#crear_JSON_limpio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.crear_JSON_limpio" title="Permalink to this definition"></a></dt>
+<dd><p>This method returns a clean JSON with W3C format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A clean JSON with W3C format</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.create_JSON">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">create_JSON</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#create_JSON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.create_JSON" title="Permalink to this definition"></a></dt>
+<dd><p>This method creates a JSON with the result of analyzing the URL given by POST method with the analyzers
+selected by the user (also sent via POST method)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A JSON file with all the results in the W3C format</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.flecha">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">flecha</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#flecha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.flecha" title="Permalink to this definition"></a></dt>
+<dd><p>This method returns the file of an arrow down logo</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>File of an arrow down logo</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.flecha_arriba">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">flecha_arriba</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#flecha_arriba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.flecha_arriba" title="Permalink to this definition"></a></dt>
+<dd><p>This method returns the file of an arrow up logo</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>File of an arrow up logo</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.fomat_informe">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">fomat_informe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">informe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#fomat_informe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.fomat_informe" title="Permalink to this definition"></a></dt>
+<dd><p>This method returns the report given by parameter formatted to be accepted by the W3C website</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<em>String</em>) – URL of the analized website</p></li>
+<li><p><strong>informe</strong> (<em>JSON</em>) – The report to be formatted</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The report given by parameter formatted to be accepted by the W3C website</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.logo">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">logo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#logo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.logo" title="Permalink to this definition"></a></dt>
+<dd><p>This method returns the file of the AC-Check logo</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>File of AC-Check logo</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.merge_reports">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">merge_reports</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">informe1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">informe2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#merge_reports"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.merge_reports" title="Permalink to this definition"></a></dt>
+<dd><p>This method returns a report with both parameter reports fusionated in one</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>informe1</strong> (<em>JSON</em>) – A report with the result of an analizer</p></li>
+<li><p><strong>informe2</strong> (<em>JSON</em>) – A report with the result of an analizer</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A report with both parameter reports fusionated in one</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>JSON</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.nombres_por_codigos">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">nombres_por_codigos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app.html#nombres_por_codigos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.nombres_por_codigos" title="Permalink to this definition"></a></dt>
+<dd><p>This method return a dictionary with the WCAG names for each standard code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The dictionary with the WCAG names for each standard code</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Mikel Iturria.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

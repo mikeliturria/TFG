@@ -1,8 +1,8 @@
 /**
- * Función que añade el listener para el click sobre el icono de la extensión.
+ * Function that adds the listener for the click on the icon of the extension.
  * 
- * Ese listener se encarga de encender y apagar la extensión. Se cambia el logo de
- * color para saber el estado de la extensión.
+ * This listener is in charge of turning the extension on and off. It changes the logo's
+ * colour to know the status of the extension.
  * */ 
 function main_bk(){
   try{

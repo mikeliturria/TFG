@@ -1,14 +1,14 @@
 if(typeof init === 'undefined'){
 	/**
-	 * Init es la función que añade la barra lateral a la página web.
+	 * Init is the function that adds the sidebar to the web page.
 	 * 
-	 * Solo se añadirá si no está añadida ya y si no estamos en la web de W3C o en las webs de internas de Chrome.
+	 * It will only be added if it is not already added and if we are not on the W3C web or inside Chrome internal sites.
 	 * */
 	const init = function(){
 		var main = document.getElementById('main_s');
 		var loc = window.location.hostname;
 		if(main === null && loc !== 'www.w3.org' && !loc.startsWith("chrome://")){
-			//Primero obtenemos todos los elementos del body.
+			//First we get all the elements of the body.
 			var bd = document.querySelectorAll( 'body > *' );
 
 			var ele = document.createElement('div');
@@ -26,7 +26,7 @@ if(typeof init === 'undefined'){
 				document.getElementById('main_s').appendChild(item)
 			}
 
-			//Añadimos el código HTML de la barra lateral
+			//Add the HTML code for the sidebar
 			let codigo_nav = '<img class="clase_logo" src="http://127.0.0.1:5000/logo.png"><br><br>';
 			codigo_nav+='<label id="limpiar" name="limpiar" class="boton_secundario_sn">Clean stored data</label><br><br>';
 			codigo_nav+='<br><br>'

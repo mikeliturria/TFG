@@ -21,23 +21,32 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route('/flecha.png')
 def flecha():
-    """
-        Devuelve la flecha mirando para abajo
+    """ This method returns the file of an arrow down logo
+
+        :returns: File of an arrow down logo
+
+        :rtype: file
     """
     return send_from_directory('../ac_check/images/','arrow.png', mimetype='image/gif')
 
 @app.route('/flecha_arriba.png')
 def flecha_arriba():
-    """
-        Devuelve la flecha mirando para arriba
+    """ This method returns the file of an arrow up logo
+
+        :returns: File of an arrow up logo
+        
+        :rtype: file
     """
     return send_from_directory('../ac_check/images/','arrow_up.png', mimetype='image/gif')
 
 @app.route('/logo.png')
 @cross_origin()
 def logo():
-    """
-        Devuelve el logo de AC-Check
+    """ This method returns the file of the AC-Check logo
+
+        :returns: File of AC-Check logo
+        
+        :rtype: file
     """
     return send_from_directory('../ac_check/images/','icon128.png', mimetype='image/gif')
 
@@ -46,7 +55,12 @@ def logo():
 @cross_origin()
 def create_JSON():
     """
-        Crea un JSON con los resultados de los análisis
+        This method creates a JSON with the result of analyzing the URL given by POST method with the analyzers
+        selected by the user (also sent via POST method)
+
+        :returns: A JSON file with all the results in the W3C format
+
+        :rtype: JSON
     """
     received_json = request.get_json()
     url = received_json['url']
@@ -79,8 +93,13 @@ def create_JSON():
 
 def accessmonitor(url):
     """
-        Obtiene el JSON del análisis realizdo por AccessMonitor para
-        la url pasada por parámetro 
+        This method gets the JSON of the AccessMonitor analysis
+
+        :param String url: URL of the webpage to be analyzed
+
+        :returns: The JSON of the AccessMonitor analysis
+
+        :rtype: JSON
     """
     #Vamos a sacar la web de access monitor
     url = url.replace("/",'%2f')
@@ -152,7 +171,7 @@ def accessmonitor(url):
                 if tipo:
                     link = cols[3].a.get('href')
                     link = 'https://accessmonitor.acessibilidade.gov.pt'+link
-                    array_respuesta,array_locations = am_get_content_of_link(link,browser,'AM')
+                    array_respuesta,array_locations = am_get_content_of_link(link,browser)
 
 
                     pos = 0
@@ -230,15 +249,22 @@ def accessmonitor(url):
     return informe
 
 
-def am_get_content_of_link(url,browser,tipo):
-    """
-        Dada la URL de un resultado de AccessMonitor, obtiene el código fallante así 
-        como la posiciñon en la que fallan y lo devuelve en dos arrays
+def am_get_content_of_link(url,browser):
+    """ 
+        Given an URL, this method returns the code which causes the error and the location of that error in the document.
+
+        :param String url: The URL to be analyzed 
+
+        :param ChromeWebDriver browser: The browser
+
+        :returns: Two arrays: One with the codes and another with the locations in the file
+
+        :rtype: Array of String
     """
     array_respuesta= []
     array_locations = []
     #Ojo no se tiene en cuenta de que pueda fallar (no hay try except finally) porque no se puede hacer el browser quit
-    if tipo =='AM' and url.startswith('https://accessmonitor.acessibilidade.gov.pt'):
+    if url.startswith('https://accessmonitor.acessibilidade.gov.pt'):
         #Uno de los links va a w3c
         browser.get(url)
         timeout_in_seconds = 50
@@ -269,7 +295,11 @@ def am_get_content_of_link(url,browser,tipo):
 
 def nombres_por_codigos():
     """
-        Obtiene un diccionario con los nombres WCAG para cada código de estándar
+        This method return a dictionary with the WCAG names for each standard code
+
+        :returns: The dictionary with the WCAG names for each standard code
+
+        :rtype: Dictionary
     """
     cod = {
     '1.1.1':'WCAG21:non-text-content',
@@ -328,7 +358,13 @@ def nombres_por_codigos():
 
 def am_get_estandares_array(divc):
     """
-        Obtiene un array con los estandares
+        This method returns an array with the standards of the given DIV WebElement
+
+        :param WebElement divc: DIV WebElement
+
+        :returns: An array with the standards of the given DIV
+
+        :rtype: Array
     """
     estandars = divc.find_all('li')
     estandares = []
@@ -340,7 +376,13 @@ def am_get_estandares_array(divc):
 
 def achecker(url):
     """
-        Devuelve un informe JSON con el análisis realizado por achecker para la url pasada por parámetro
+        This method returns a JSON report with the analysis made by AChecker for the URL given by parameter
+
+        :param String url: URL of the page being analyzed
+
+        :returns: A JSON report with the analysis made by AChecker
+        
+        :rtype: JSON
     """
     informe_casos = {}
     ac = "https://achecker.achecks.ca/checker/index.php"
@@ -384,7 +426,13 @@ def achecker(url):
 
 def ac_get_contenido(browser):
     """
-        Devuelve el un informe con errores, advertencias,... realizado por AChecker
+        This method returns a report with the results (failures, warning,...) made by AChecker
+
+        :param ChromeWebDriver browser: The browser
+
+        :returns: A JSON with the results of the report
+        
+        :rtype: JSON
     """
     informe = {
         'Tester_Name' : 'Achecker'
@@ -607,7 +655,15 @@ def ac_get_contenido(browser):
 
 def merge_reports(informe1, informe2):
     """
-        Devuelve un informe fusionando los dos informes introducidos por parámetro
+        This method returns a report with both parameter reports fusionated in one 
+
+        :param JSON informe1: A report with the result of an analizer
+
+        :param JSON informe2: A report with the result of an analizer
+
+        :returns: A report with both parameter reports fusionated in one 
+        
+        :rtype: JSON
     """
     if informe1 == {}:
         informe1 = informe2;
@@ -676,8 +732,15 @@ def merge_reports(informe1, informe2):
 
 def fomat_informe(url,informe):
     """
-        Crea un informe con el formato de W3C con los datos obtenidos desde el informe de resultados 
-        pasado como parámetro.
+        This method returns the report given by parameter formatted to be accepted by the W3C website
+
+        :param String url: URL of the analized website
+
+        :param JSON informe: The report to be formatted
+
+        :returns: The report given by parameter formatted to be accepted by the W3C website
+        
+        :rtype: JSON
     """
     description = url
     pos = url.find('.')
@@ -734,7 +797,11 @@ def fomat_informe(url,informe):
 
 def crear_JSON_limpio():
     """
-        Devuelve un JSON con formato de la web de W3C completamente limpio
+        This method returns a clean JSON with W3C format
+
+        :returns: A clean JSON with W3C format
+        
+        :rtype: JSON
     """
     now = datetime.now()
     time = str(now.strftime("%a %b %d %Y"))

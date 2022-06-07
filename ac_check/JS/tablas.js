@@ -1,16 +1,15 @@
 /** 
- * Update sirve para analizar los nuevos datos añadidos, hayan sido obtendiso de 
- * forma automática o de forma manual, agregando un informe.
+ * Update is used to analyse the newly added data, whether obtained automatically or manually,
+ * by adding a report.
  * 
- * Con esos datos crea la tabla de resultados.
+ * With that data, it creates the results table.
  */
 function update(){
     var jsonT = localStorage.getItem("json");
     var json = JSON.parse(jsonT);
     var a_s = json.auditSample;
     let longitud = json.auditSample.length;
-    console.log("Long: "+longitud);
-    //La longitud es 50 en AA
+    //Length is 50 in AA
 
     var c_passed = 0;
     var c_failed = 0;
@@ -99,7 +98,7 @@ function update(){
 
 
 /** 
- * Sirve para poder traducir el código que nos llega desde el informe al estándar numérico
+ * It is used to translate the code that comes from the report into the numerical standard.
  */
 function codigos_por_nombres(){
     cod = {
@@ -158,7 +157,7 @@ function codigos_por_nombres(){
 }
 
 /**
- * Dado un estandar o subestandar, devuelve los subsecciones de ese estandar o subestandar.
+ * Given a standard or sub-standard, returns the subsections of that standard or sub-standard.
  */
 function sub_temasF(estandar){
     var respuesta = {};
@@ -310,7 +309,7 @@ function sub_temasF(estandar){
 }
 
 /**
- * Imprime las subsecciones de la sección "s" en HTML y lo devuelve
+ * Prints out the subsections of the "s" section in HTML and returns it
  */
 function print_subsections(s){
     var sub_temas = sub_temasF(s);
@@ -339,8 +338,8 @@ function print_subsections(s){
 }
 
 /** 
- * Dado un subsubestandar como parámetro, obtiene los resultados en materia de aciertos, fallos, advertencias, 
- * no presentes y no checkeados para ese subsubestandar y lo devuelve en forma de array.
+ * Given a sub-substandard as a parameter, obtains the results in terms of failures, passes, warnings,
+ * not present and not checked for that sub-substandard and returns it as an array, 
  */
 function get_datos(keyST){
     var json_resultados = localStorage.getItem('json_resultados');
@@ -378,7 +377,7 @@ function get_datos(keyST){
 }
 
 /**
- * Imprime las subsubsecciones de la subseccion pasada como parámetro y lo devuelve como cadena de caracteres HTML
+ * Prints the subsubsections of the subsection passed as parameter and returns it as HTML string
  */
 function print_sub_subsubsections(estandar){
     var sub_temas = sub_temasF(estandar);
@@ -419,7 +418,6 @@ function print_sub_subsubsections(estandar){
             let obj = json_resultados[keyST];
             if("Codigos" in obj){
                 let codigos = json_resultados[keyST]['Codigos'];
-                //console.log("Key: "+keyST+" cod "+codigos);
                 len = codigos.length;
             }else{
                 len = 0;
@@ -455,8 +453,8 @@ function print_sub_subsubsections(estandar){
 }
 
 /** 
- * Dada una subsubsección como parámetro, imprime los resultados obtenidos en el análisis 
- * y lo devuelve como cadena de caracteres HTML
+ * Given a sub-subsection as a parameter, prints the results obtained in the analysis 
+ * and returns it as an HTML string
  */
 function print_report_result(keyST){
     var json_resultados = localStorage.getItem('json_resultados');
