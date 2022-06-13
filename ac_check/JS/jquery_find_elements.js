@@ -188,7 +188,9 @@ $(document).ready(function(){
           padre = elemento.parentNode;
           html_o = padre.outerHTML;
           localStorage.setItem('elemento_padre',html_o);
-          ele.appendChild(elemento);
+          //ele.appendChild(elemento);
+          elem_clon = elemento.cloneNode(true);
+          ele.appendChild(elem_clon);
           padre.replaceChild(ele,elemento);
           ele.scrollIntoView(); 
         break;
