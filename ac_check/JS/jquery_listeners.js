@@ -94,31 +94,37 @@ $(document).ready(function(){
    * Listener for the click on the button to get data automatically
    */
   $("#auto").click(function(){
-      localStorage.removeItem('json');
-      var req = new XMLHttpRequest();
-      var url = 'http://127.0.0.1:5000/getJSON/';
-      req.responseType = 'json';
-      var url_local = window.location.href;
 
-      req.open('POST', url, true);
-      req.onload  = function() {
-        var jsonResponse = req.response;
-        localStorage.setItem("json",JSON.stringify(jsonResponse));
-        alert("Data successfully saved");
-        update();
-        var origin = window.location.origin; 
-        if(origin !=="https://www.w3.org"){
-          window.location.reload();
-        }  
-      };
-      req.setRequestHeader('Content-Type', 'application/json');
-      
-      req.send(JSON.stringify({
-          'url': url_local,
-          'AM': $('#AM_checkbox').is(":checked"),
-          'AC': $('#AC_checkbox').is(":checked")
-      }));
-      document.getElementById('tabla_res').innerHTML='<div class="loader_s"></div>';
+    if (!$('#AM_checkbox').is(":checked") && !$('#AC_checkbox').is(":checked")){
+      alert('You need to choose at least one analizer');
+      return;
+    }
+
+    localStorage.removeItem('json');
+    var req = new XMLHttpRequest();
+    var url = 'http://127.0.0.1:5000/getJSON/';
+    req.responseType = 'json';
+    var url_local = window.location.href;
+
+    req.open('POST', url, true);
+    req.onload  = function() {
+      var jsonResponse = req.response;
+      localStorage.setItem("json",JSON.stringify(jsonResponse));
+      alert("Data successfully saved");
+      update();
+      var origin = window.location.origin; 
+      if(origin !=="https://www.w3.org"){
+        window.location.reload();
+      }  
+    };
+    req.setRequestHeader('Content-Type', 'application/json');
+    
+    req.send(JSON.stringify({
+        'url': url_local,
+        'AM': $('#AM_checkbox').is(":checked"),
+        'AC': $('#AC_checkbox').is(":checked")
+    }));
+    document.getElementById('tabla_res').innerHTML='<div class="loader_s"></div>';
   });
 
   /**
