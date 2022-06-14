@@ -28,6 +28,7 @@ function update(){
         estandar = obj.test.id;
         codigo_estandar = codigos[estandar];
         res = obj.result.outcome.id;
+        mensaje = obj.result.description;
         switch(res) {
             case "earl:failed":
                 c_failed = c_failed+1;
@@ -49,7 +50,8 @@ function update(){
 
         json_resultados[codigo_estandar] = {
             'result' : res,
-            "Codigos": obj.result.codigo_error 
+            "Codigos": obj.result.codigo_error,
+            'mensaje': mensaje
         };
     }
 
@@ -148,7 +150,7 @@ function codigos_por_nombres(){
     'WCAG21:error-identification' : '3.3.1',
     'WCAG21:labels-or-instructions' : '3.3.2',
     'WCAG21:error-suggestion' : '3.3.3',
-    'WCAG21:error-prevention-legal-financial-data' : '3.4.3',
+    'WCAG21:error-prevention-legal-financial-data' : '3.3.4',
     'WCAG21:parsing' : '4.1.1',
     'WCAG21:name-role-value' : '4.1.2',
     'WCAG21:status-messages' : '4.1.3'
@@ -191,7 +193,7 @@ function sub_temasF(estandar){
             respuesta = {
                 '3.1': '3.1 Readable',
                 '3.2': '3.2 Predictable',
-                '3.3': '3.3 Input Assistance'
+                '3.3': '3.3 Input Assistance',
             }
             break;
         case '4':
@@ -380,6 +382,8 @@ function get_datos(keyST){
  * Prints the subsubsections of the subsection passed as parameter and returns it as HTML string
  */
 function print_sub_subsubsections(estandar){
+    var jsonT__ = localStorage.getItem("json");
+    var json__ = JSON.parse(jsonT__);
     var sub_temas = sub_temasF(estandar);
     let st = "";
     let style = "";
@@ -387,6 +391,8 @@ function print_sub_subsubsections(estandar){
     let result_text ="";
     let len = 0;
     var json_resultados = localStorage.getItem('json_resultados');
+    let manual = false;
+
     json_resultados = JSON.parse(json_resultados);
     for(var keyST in sub_temas){
         len = 0;
@@ -429,13 +435,23 @@ function print_sub_subsubsections(estandar){
             result_text = "NOT CHECKED";
         }
         
-
+        //Text could be painted bacause it was made auot or manual.
+        //Manual has len = 0, we need to check if 
+        //First we get the WCAG name
+        let mensaje_wcag_manual = '';
+        if(len == 0){
+            mensaje_wcag_manual =json_resultados[keyST].mensaje; 
+            manual = false;
+            if(mensaje_wcag_manual!== ''){
+                manual = true;
+            }
+        }
 
         st = sub_temas[keyST];
         codigo_nav_st +='<button type="button" class="collapsible_tabla3" style="'+style+'"><table style="width:100%; table-layout: fixed; overflow-wrap: break-word;""><tr>';
         
-        if(len>0){
-            codigo_nav_st += '<td style="width:15%;"><img src="http://127.0.0.1:5000/flecha.png" alt="Desplegar informacion" height="20px"></td>';
+        if(len>0 || manual){
+            codigo_nav_st += '<td style="width:15%;"><img src="http://127.0.0.1:5000/flecha.png" alt="Show information" height="20px"></td>';
             codigo_nav_st += '<td style="width:55%;  font-size:10px;  text-align: left;">'+st+'</td>';
         }else{
             codigo_nav_st += '<td style="width:70%;  font-size:10px;  text-align: left;">'+st+'</td>';
@@ -445,6 +461,11 @@ function print_sub_subsubsections(estandar){
         
         if(len>0){
             codigo_nav_st += print_report_result(keyST);
+        }else if(manual){
+            codigo_nav_st += '<table class="tabla_resultados">';
+            codigo_nav_st += '<tr><td><b><u>Manual message</u></b>: <br>'+mensaje_wcag_manual;
+            codigo_nav_st += '</td></tr></table>';
+
         }
         
         codigo_nav_st+='</div>';
@@ -497,9 +518,11 @@ function print_report_result(keyST){
                     loc = 'alt="'+codigo[j]['location']+'"';
                 }
 
-                html += '<code class="codigo_analisis" style="cursor: pointer;"'+loc+'>'+codigot+'</code><br><br>';
+                html += '<code class="codigo_analisis" style="cursor: pointer;"'+loc+'>'+codigot+'</code>';
             }
-            html += '</td></tr>';
+            html += '<br><br></td></tr>';
+        }else{
+            html = html.substring(0,html.length-10)+'<br><br></td></tr>';
         }
     }
     html += '</table>'; 

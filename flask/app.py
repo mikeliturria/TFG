@@ -134,7 +134,6 @@ def accessmonitor(url):
         informe['RESULTADO']=score.text
 
         rows = cabeza.find_all('tr')
-
         for row in rows:
             objeto_codigos_fallantes = {}
             cols = row.find_all('td')
@@ -169,9 +168,13 @@ def accessmonitor(url):
                 texto_link = ""
                 afc_code = []
                 if tipo:
-                    link = cols[3].a.get('href')
-                    link = 'https://accessmonitor.acessibilidade.gov.pt'+link
-                    array_respuesta,array_locations = am_get_content_of_link(link,browser)
+                    hyper = cols[3].a
+                    if not hyper is None:
+                        link = hyper.get('href')
+                        if not link.startswith('http'):
+                            link = 'https://accessmonitor.acessibilidade.gov.pt'+link
+                            array_respuesta,array_locations = am_get_content_of_link(link,browser)
+
 
 
                     pos = 0
@@ -239,6 +242,8 @@ def accessmonitor(url):
                             }
     except TimeoutException:
         print("I give up...")
+    except Exception as e:
+        print(e)
     finally:
         browser.quit()
         informe['Cases'] = informe_casos
