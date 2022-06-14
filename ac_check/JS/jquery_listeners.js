@@ -76,17 +76,19 @@ $(document).ready(function(){
    */
   $(".collapsible_tabla3").click(function(){
     let foto_ele = $(this).find('img')[0];
-    let actual_src = foto_ele.getAttribute('src');
-    if(actual_src === "http://127.0.0.1:5000/flecha.png"){
-      foto_ele.setAttribute('src',"http://127.0.0.1:5000/flecha_arriba.png");
-    }else{
-      foto_ele.setAttribute('src',"http://127.0.0.1:5000/flecha.png");
-    }
-    var content = this.nextElementSibling;
-    if (content.style.display === "block") {
-      content.style.display = "none";
-    } else {
-      content.style.display = "block";
+    if (typeof foto_ele !== 'undefined') {   
+      let actual_src = foto_ele.getAttribute('src');  
+      if(actual_src === "http://127.0.0.1:5000/flecha.png"){
+        foto_ele.setAttribute('src',"http://127.0.0.1:5000/flecha_arriba.png");
+      }else{
+        foto_ele.setAttribute('src',"http://127.0.0.1:5000/flecha.png");
+      }
+      var content = this.nextElementSibling;
+      if (content.style.display === "block") {
+        content.style.display = "none";
+      } else {
+        content.style.display = "block";
+      }
     }
   });
 

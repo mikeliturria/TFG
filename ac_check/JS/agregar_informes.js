@@ -150,8 +150,26 @@ function merge_audit_samples(primario,secundario){
     var arr_sec = secundario.auditSample;
     let longitud = primario.auditSample.length;
 
+    let texto = "";
+    var obj_prim;
+
+    var res_prov1;
+    var res_prov2;        
+    var au1 = {};
+    var au2 = {};
+    var codigos1;
+    var codigos2;
+
+    var com1 = primario.reportFindings.evaluator;
+    var com2 = secundario.reportFindings.evaluator;
+
+    var au1_des = "";
+    var au2_des = "";
+
+
     for (var i = 0; i <longitud; i++){
-        var obj_prim = primario.auditSample[i];
+        texto = "";
+        obj_prim = primario.auditSample[i];
         //console.log(obj_prim.test.id);
 
         /*
@@ -162,26 +180,29 @@ function merge_audit_samples(primario,secundario){
         */
 
         //We check if it happens in the original.
-        var res_prov1 = primario.auditSample[i].result.outcome.id;
-        var res_prov2 = secundario.auditSample[i].result.outcome.id;
+        res_prov1 = primario.auditSample[i].result.outcome.id;
+        res_prov2 = secundario.auditSample[i].result.outcome.id;
 
-        var au1 = primario.auditSample[i];
-        var au2 = secundario.auditSample[i];
+        au1 = primario.auditSample[i];
+        au2 = secundario.auditSample[i];
 
-        var codigos1 = primario.auditSample[i].result.codigo_error;
-        var codigos2 = secundario.auditSample[i].result.codigo_error;
+        au1_des = primario.auditSample[i].result.description;
+        au2_des = secundario.auditSample[i].result.description;
+
+        codigos1 = primario.auditSample[i].result.codigo_error;
+        codigos2 = secundario.auditSample[i].result.codigo_error;
+
 
         switch(true){
 
             //Case the first one untested and the second one not untested
             case(res_prov1 == "earl:untested" && res_prov2 !== "earl:untested"):
+
                 primario.auditSample[i].result = au2.result;
                 break;
 
-
             //Case both fail: Descriptions are added together
             case(res_prov1 == "earl:failed" && res_prov2 == "earl:failed"):
-                primario.auditSample[i].result.description = "-"+au1.result.description+" \n -"+au2.result.description;
                 break;
             //Case the second is failed, it doesn't matter what is first.
             case(res_prov2 == "earl:failed"):
@@ -190,11 +211,23 @@ function merge_audit_samples(primario,secundario){
 
             //Case the first is cantTell and the second is different from cantTell
             case(res_prov1 == "earl:cantTell" && res_prov2 !== "earl:cantTell"):
-                primario.auditSample[i].result = au2.result;
+                primario.auditSample[i].result = au1.result;
                 break;
             default:
                 break;
         }
+        if(!au1_des.startsWith('<b>@') && au1_des !== ''){
+            primario.auditSample[i].result.description="<b>@"+com1+'</b>['+res_prov1.substring(5)+']: '+au1_des;
+        }else{
+            primario.auditSample[i].result.description=au1_des;
+        }
+        if(au2_des !== ''){
+            if(primario.auditSample[i].result.description !== ''){
+                primario.auditSample[i].result.description+="<br><br>";
+            }
+            primario.auditSample[i].result.description+="<b>@"+com2+'</b>['+res_prov2.substring(5)+']: '+au2_des;
+        }
+
 
         //We add codes which the user will be able to click on to find them
         if(codigos1 !== undefined && codigos2 !== undefined){
