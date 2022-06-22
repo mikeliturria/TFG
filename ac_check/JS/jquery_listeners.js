@@ -112,8 +112,8 @@ $(document).ready(function(){
     req.onload  = function() {
       var jsonResponse = req.response;
       localStorage.setItem("json",JSON.stringify(jsonResponse));
-      alert("Data successfully saved");
       update();
+      alert("Data successfully saved");
       var origin = window.location.origin; 
       if(origin !=="https://www.w3.org"){
         window.location.reload();
