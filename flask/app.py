@@ -3,6 +3,8 @@ from flask_cors import CORS, cross_origin
 
 import concurrent.futures
 
+import platform
+
 from bs4 import BeautifulSoup as soup
 from datetime import datetime
 
@@ -17,6 +19,19 @@ from selenium.common.exceptions import TimeoutException
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+
+#We select the correct driver depending the OS
+if platform.system() == 'Windows':
+    executable_path='./chromedriver_WIN.exe'
+elif platform.system() == 'Linux':
+    executable_path='./chromedriver_LIN'
+elif platform.system() == 'Darwin':
+    executable_path='./chromedriver_MAC'
+else:
+    print('There is an error detecting the OS, only Windows, MacOS and Linux are supported')
+    executable_path = ''
+
+
 
 
 @app.route('/flecha.png')
@@ -110,7 +125,7 @@ def accessmonitor(url):
     options.add_argument('--headless')
     #Importante ponerle el lenguaje predefinido el inglés, sino sale en portugués
     options.add_argument("--lang=en");
-    browser = webdriver.Chrome(options=options, executable_path='./chromedriver.exe')
+    browser = webdriver.Chrome(options=options, executable_path=executable_path)
 
     informe = {
         'Tester_Name' : 'Access_Monitor'
@@ -396,9 +411,9 @@ def achecker(url):
     #Importante ponerle el lenguaje predefinido el inglés, sino sale en portugués
     options.add_argument("--lang=en");
     # executable_path param is not needed if you updated PATH
-    browser = webdriver.Chrome(options=options, executable_path='./chromedriver.exe')
+    browser = webdriver.Chrome(options=options, executable_path=executable_path)
 
-    informe = {
+    informe_casos = {
         'Tester_Name' : 'Achecker',
         'Cases':{}
     }
@@ -423,9 +438,12 @@ def achecker(url):
 
     except TimeoutException:
         print("I give up...")
+    except Exception as e:
+        print(e)
     finally:
         browser.quit()
         informe = informe_casos
+        informe['Tester_Name']=  'Achecker'
         print("AC hecho")
         return informe
 
@@ -711,8 +729,12 @@ def merge_reports(informe1, informe2):
                 resultado_Actual = value['Resultado']
                 texto_Actual = value['Texto']
 
-                #informe_final[key]['Codigos'].append(value['Codigos'])
-
+            
+                #--------------------Criteria---------------------
+                #-If one of the two is "failed", result is "failed".
+                #-If one is "untested" and the other is tested, the result of the other is set.
+                #-If one is "cantTell" and the other has a result, the result of the other is set.
+                
 
                 if resultado_Previo =='Failed'or resultado_Actual == 'Failed':
                     informe_final[key]['Resultado'] = 'Failed'
