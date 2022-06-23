@@ -4,6 +4,14 @@ from flask_cors import CORS, cross_origin
 import concurrent.futures
 
 import platform
+import os
+from os import listdir
+
+import os.path
+import plistlib
+import chromedriver_autoinstaller
+import shutil
+
 
 from bs4 import BeautifulSoup as soup
 from datetime import datetime
@@ -20,17 +28,48 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-#We select the correct driver depending the OS
-if platform.system() == 'Windows':
-    executable_path='./chromedriver_WIN.exe'
-elif platform.system() == 'Linux':
-    executable_path='./chromedriver_LIN'
-elif platform.system() == 'Darwin':
-    executable_path='./chromedriver_MAC'
-else:
-    print('There is an error detecting the OS, only Windows, MacOS and Linux are supported')
-    executable_path = ''
+path = './chromedrivers'
+executable_path = ''
+try:
+    max_version = 0
+    #First we check the max version of the driver installed
+    for d in os.listdir(path):
+        if int(str(os.path.basename(d))) > max_version:
+            max_version = int(str(os.path.basename(d)))
 
+    if(max_version == 0):
+        raise Exception("No driver installed")
+    else:
+        #We create the path with the driver installed and delete the older drivers
+        executable_path = path+'/'+str(max_version)
+        if len(os.listdir(path))>1:
+            for d in os.listdir(path):
+                if int(str(os.path.basename(d))) < max_version:
+                    shutil.rmtree(path+'/'+d)
+
+
+    options1 = webdriver.ChromeOptions()
+    options1.add_argument('--headless')
+
+
+    #We select the correct driver depending the OS
+    if platform.system() == 'Windows':
+        executable_path=executable_path+'/chromedriver.exe'
+    elif platform.system() == 'Linux':
+        executable_path=executable_path+'/chromedriver'
+    elif platform.system() == 'Darwin':
+        executable_path=executable_path+'/chromedriver'
+    else:
+        print('There is an error detecting the OS, only Windows, MacOS and Linux are supported')
+        executable_path = ''
+    browser1 = webdriver.Chrome(options=options1,executable_path=executable_path)
+    browser1.quit()
+    print('Driver ok')
+
+except Exception as ex:
+    print(ex)   
+    print('Wrong Chromedriver version, we try to update')
+    chromedriver_autoinstaller.install(path='./chromedrivers')
 
 
 
