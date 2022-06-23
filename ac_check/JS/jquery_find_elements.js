@@ -61,6 +61,7 @@ $(document).ready(function(){
         mt_am(); 
     }
     if(!pintado){
+      actualizar_ultimo('blank');
       alert('Element couldn\'t be found');
     }
 
@@ -71,7 +72,7 @@ $(document).ready(function(){
    * */
   function actualizar_ultimo(src){
     let ultimo = localStorage.getItem('ultimo');
-    if(ultimo!==null){
+    if(ultimo!==null && ultimo!=='blank'){
       if(ultimo.startsWith("//")){
         eti = ultimo.substring(2,ultimo.indexOf('['));
         if($(_x(ultimo)).length === 1){
